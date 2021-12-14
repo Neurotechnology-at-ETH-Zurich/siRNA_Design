@@ -26,36 +26,47 @@ These modules are called in the main.py file, which further relies on the helper
 
 1. ThermoFisher's BLOCK-iT RNAi Designer
 
-For our purposes, [this tool](https://rnaidesigner.thermofisher.com/rnaiexpress/) provides sequences which can then be ordered from ThermoFisher with additional chemical modifications they do not disclose; the product is named 'Stealth RNAi siRNA'. The algorithm this tool relies on is proprietary, and the only parameters we can manually set are species and G/C percentage (min & max).
+For our purposes, [this tool](https://rnaidesigner.thermofisher.com/rnaiexpress/) provides sequences which can then be ordered from ThermoFisher with additional chemical modifications they do not disclose; the product is named 'Stealth RNAi siRNA'. The algorithm this tool relies on is proprietary, and the only parameters we can manually set are species and G/C percentage (min & max). Note that we are here extracting information about the position on the mRNA that their siRNA would be targeting, however their product (the effectiveness of which they vouch for) is heavily chemically modified. It is designed to be suitable for in vitro and in vivo experiments; especially for the latter it is endowed with higher specificity, stability, and less cellular toxicity by suppressing the initiation of protein kinase R/interferon response pathway. However, they give no information about the nature and position of these modifications.
 
 2. RNA Wizard
 
-We know that this tool considers optimal internal stability of siRNAs, and excludes immunogenic sequences. However also here, we cannot choose the underlying algorithms and parameters.
+[RNA Wizard](http://www.sirnawizard.com/design_advanced.php) by Invivogen considers optimal internal stability of siRNAs, and excludes immunogenic sequences. However also here, we cannot choose the underlying algorithms and parameters.
 
 3. siDirect
 
-This tool allows us to choose from different algorithms and their combinations.
+[SiDirect](http://sidirect2.rnai.jp/) is based on the algorithm by [Ui-Tei et al.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2602766/) by default. Ui-Tei et al. found that off-target effects are strongly related to thermodynamic properties of the siRNA seed region & target mRNA 3' UTR duplex. To obtain siRNA with reduced off-target effects, the melting temperature of the seed duplex should be <21.5°C. Users can also choose other algorithms ([Reynolds et al.](https://www.nature.com/articles/nbt936); [Amarzguioui et al.]) and various combinations of these algorithms. As a default, the siDirect module returns all candidates that are suggested by either Ui-Tei, Reynolds, or Amarzguoui, but this can easily be changed in the code to select e.g. only candidates which are suggested by all three.
 
 4. siDESIGN center
 
 The siDESIGN center by Dharmacon (which was acquired by Horizon Discovery) is based on the algorithms by [Elbashir et al.](https://www.sciencedirect.com/science/article/abs/pii/S1046202302000233?via%3Dihub) and [Reynolds et al](https://www.nature.com/articles/nbt936). If the nucleotide sequence is provided as input, the seed region specificity of siRNAs can be evaluated - this is relevant for estimating off-target effects. The exact matches of the seed region of siRNA to the 3' UTR of the genes are determined; the lower frequency of seed region in the target genome proves the specificity of siRNA.
 
-5. sFold
+5. sirna by sFold
+
+[sirna](https://sfold.wadsworth.org/cgi-bin/sirna.pl) is a submodule of sfold [Ding et al.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC441587/), the software for statistical folding of nucleic acids and studies of regulatory RNAs. siRNA design is based on a combination of RNA target accessibility prediction, siRNA duplex thermodynamic properties and empirical design rules. Its approach to target accessibility evaluation is an original extension of the underlying RNA folding algorithm to account for the likely existence of a population of structures for the target mRNA [source](https://www.hsls.pitt.edu/obrc/index.php?page=URL1097777933).
 
 6. RNAi Explorer
 
-This tool does not include different algorithms and parameters. The page seems to be faulty; it remains to be seen whether this defect is temporary. If the page stays down, RNAi Explorer will be excluded from this project.
+[RNAi Explorer software](http://www.genelink.com/sirna/RNAicustomorder.asp) by Gene Link Inc. includes parameters such as GC content and consecutive bases. This tool does not include different algorithms and parameters. The page seems to be faulty; it remains to be seen whether this defect is temporary. If the page stays down, RNAi Explorer will be excluded from this project.
 
 7. Oligowalk
 
-This tool provides comprehensive thermodynamic information, as well as an estimated probability of it being efficient siRNA. The results are sent per email, which takes several hours. The code is written so that the link which one receives per e-mail can be pasted into the console, upon which the results are analysed. A drawback of Oligowalk is that it has not been updated since 2008.
+[Oligowalk](http://rna.urmc.rochester.edu/cgi-bin/server_exe/oligowalk/oligowalk_form.cgi) was designed by Mathew's group at the University of Rochester Medical Center. It mainly selects functional siRNAs based on thermodynamic hybridization properties and the algorithm by [Reynolds et al](https://www.nature.com/articles/nbt936). This tool provides both comprehensive thermodynamic information, as well as an estimated probability of it being efficient siRNA. The results are sent per email, which takes several hours. The code is written so that the link which one receives per e-mail can be pasted into the console, upon which the results are analysed. A drawback of Oligowalk is that it has not been updated since 2008.
 
 8. SiRNA Design (IDT)
 
-This tool considers asymmetrical end stability, which is an important siRNA design parameter.
+[This tool]((http://eu.idtdna.com/Scitools/Applications/RNAi/RNAi.aspx?source = menu) by Integrated DNA Technologies Inc. considers asymmetrical end stability, which is an important siRNA design parameter. Traditionally, siRNAs are around 21nt in length. IDT proposes using 27nt RNA duplexes, which are able to effectively target some sites that 21mers cannot silence. These DsiRNAs are processed by Dicer into 21mer siRNAs. Further background is provided [here](https://eu.idtdna.com/pages/education/decoded/article/rnai). For our purposes, we just extract the site they suggest targeting, but stick to our 21nt length.
 
 9. Eurofins siMax
 
+The [siRNA design tool](https://eurofinsgenomics.eu/en/ecom/tools/sirna-design/) by Eurofins Genomics allows you to specify which stretch of the coding region should be targeted (the whole sequence is the default), which problematic designs to exclude (>3G/Cs in a row, >A/Us in a row, U at 3' end, excluding all of these is set as default), min. and max. GC content (default: 30-53), and min. distance from start and stop codon (default in both cases: 100).
+
+### Step 2
+
+### User inputs
+
+Providing the mRNA target
+
+What else does it ask for: sample name, email. Still coming up: select species, GC content, algo combination for siDirect module.
 
 
 
