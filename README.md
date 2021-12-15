@@ -56,7 +56,7 @@ The siDESIGN center by Dharmacon (which was acquired by Horizon Discovery) is ba
 
 8. SiRNA Design (IDT)
 
-[This tool]((http://eu.idtdna.com/Scitools/Applications/RNAi/RNAi.aspx?source = menu) by Integrated DNA Technologies Inc. considers asymmetrical end stability, which is an important siRNA design parameter. Traditionally, siRNAs are around 21nt in length. IDT proposes using 27nt RNA duplexes, which are able to effectively target some sites that 21mers cannot silence. These DsiRNAs are processed by Dicer into 21mer siRNAs. Further background is provided [here](https://eu.idtdna.com/pages/education/decoded/article/rnai). For our purposes, we just extract the site they suggest targeting, but stick to our 21nt length.
+[This tool](https://eu.idtdna.com/site/order/designtool/index/DSIRNA_CUSTOM) by Integrated DNA Technologies Inc. considers asymmetrical end stability, which is an important siRNA design parameter. Traditionally, siRNAs are around 21nt in length. IDT proposes using 27nt RNA duplexes, which are able to effectively target some sites that 21mers cannot silence. These DsiRNAs are processed by Dicer into 21mer siRNAs. Further background is provided [here](https://eu.idtdna.com/pages/education/decoded/article/rnai). For our purposes, we just extract the site they suggest targeting, but stick to our 21nt length.
 
 9. Eurofins siMax
 
