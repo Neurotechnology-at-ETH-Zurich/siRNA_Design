@@ -4,10 +4,12 @@ Collection of tools to retrieve siRNA (small interfering RNA) candidate sequence
 General notes:
 
 - We are designing 21nt siRNA sequences (19nt + 2nt TT overhangs).
-- ...
+- There are 2 requirements the mRNA sequence you provide as input should satisfy: (a) needs to begin at start codon to ensure proper scoring of parameter 4 (for explanation see step 2), (b) needs to exclude introns which allows us to skip parameter 5 (for explanation see step 2)
 
-### Step 1: Retrieving siRNA candidate sequences suggested by a variety of design algorithms and softwares. 
-siRNA candidates which are suggested by multiple tools (>3) will be further analysed in step 2 based on a 20-parameter quality scoring system.
+### Step 1: Automate siRNA candidate discovery
+
+In this step, we retrieve siRNA candidate sequences suggested by a variety of design algorithms and softwares. siRNA candidates which are suggested by multiple tools (>3) will be further analysed in step 2 based on a 20-parameter quality scoring system.
+
 The folder 'software_comparisons' mainly consists of modules which enable webscraping of siRNA design websites.
 
 The software tools included are:
@@ -54,7 +56,7 @@ The siDESIGN center by Dharmacon (which was acquired by Horizon Discovery) is ba
 
 8. SiRNA Design (IDT)
 
-[This tool]((http://eu.idtdna.com/Scitools/Applications/RNAi/RNAi.aspx?source = menu) by Integrated DNA Technologies Inc. considers asymmetrical end stability, which is an important siRNA design parameter. Traditionally, siRNAs are around 21nt in length. IDT proposes using 27nt RNA duplexes, which are able to effectively target some sites that 21mers cannot silence. These DsiRNAs are processed by Dicer into 21mer siRNAs. Further background is provided [here](https://eu.idtdna.com/pages/education/decoded/article/rnai). For our purposes, we just extract the site they suggest targeting, but stick to our 21nt length.
+[This tool](https://eu.idtdna.com/site/order/designtool/index/DSIRNA_CUSTOM) by Integrated DNA Technologies Inc. considers asymmetrical end stability, which is an important siRNA design parameter. Traditionally, siRNAs are around 21nt in length. IDT proposes using 27nt RNA duplexes, which are able to effectively target some sites that 21mers cannot silence. These DsiRNAs are processed by Dicer into 21mer siRNAs. Further background is provided [here](https://eu.idtdna.com/pages/education/decoded/article/rnai). For our purposes, we just extract the site they suggest targeting, but stick to our 21nt length.
 
 9. Eurofins siMax
 
@@ -62,11 +64,33 @@ The [siRNA design tool](https://eurofinsgenomics.eu/en/ecom/tools/sirna-design/)
 
 ### Step 2
 
+In this step we perform mostly automatic scoring of the suggested candidates that step 1 yields. The scoring is based on rational design parameters suggested by [Fakhr et al. (2016)](https://www.nature.com/articles/cgt20164.pdf). This will be particularly useful to justify or explain potential differences in efficacy that we might observe experimentally. Candidates suggested by step 1 and validated by step 2 should in theory have a high chance of working well.
+
+What are the parameters, and what are their weights?
+1. BLAST search of sense strand (1): this should be done **manually**
+2. BLAST search of antisense strand (1): this should be done **manually**
+3. Not located at SNP site (1): in the case of luciferase, this is not necessary; therefore this parameter is, for now, not implemented yet.
+4. Not located in first 75 bases from start codon (1)
+5. Not in the intron (1): We can exclude this parameter as our input sequence should already exclude introns.
+6. GC content of 36-52% (1). Note: Amarzguioui et al. suggest 31.6-57.9, one could consider being a bit more tolerant with this parameter. The distribution of GCs probably matters more than total content.
+7. Asymmetrical base pairing in the duplex (2): more A/U at 5' of antisense strand and more G/C at 5' of sense strand
+8. Energy valley in the 9-14th nucleotide of the sense strand (2)
+9. GC repeat less than 3 (0.5)
+10. AT repeat less than 4 (0.5)
+11. No internal secondary structures and hairpins (2): This needs to be checked **manually**, e.g. using the RNAfold web server
+12. 3'-TT overhangs (1)
+13. Weak base pair at 5'-end of antisense (1): presence of A/U
+14. Strong base pair at 5'-end of sense (1): presence of G/C
+15. Presence of A at 6th position of antisense strand (1)
+16. Presence of A at 3rd position of sense strand (0.5)
+17. Presence of A at 19th position of sense strand (0.5)
+18. Absence of G/C at 19th position of sense strand (1)
+19. Absence of G at 13th nucleotide of sense strand (1)
+20. Presence of U at 10th nucleotide of sense strand (1)
+
 ### User inputs
 
-Providing the mRNA target
-
-What else does it ask for: sample name, email. Still coming up: select species, GC content, algo combination for siDirect module.
+Providing the mRNA target (plain nucleotides & [FASTA format](https://www.bioinformatics.nl/tools/crab_fasta.html)), target name, email. Still coming up: select species, GC content, algo combination for siDirect module.
 
 
 
