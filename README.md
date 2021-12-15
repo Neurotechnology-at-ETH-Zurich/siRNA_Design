@@ -1,11 +1,30 @@
 ## siRNA Design Pipeline
 Collection of tools to retrieve siRNA (small interfering RNA) candidate sequences targeting your gene of interest from popular siRNA design tools, identify which candidates are suggested by multiple different software tools, and perform further quality checking and validation on identified candidates.
 
-General notes:
+## Table of Content:
+- [General notes on usage](#notes)
+- [Step 1: Automate siRNA candidate discovery](#step1)
+  - [ThermoFisher's BLOCK-iT RNAi Designer](#thermo)
+  - [RNA Wizard](#rnawiz)
+  - [siDirect](#sidirect)
+  - [siDESIGN center](#sidesign)
+  - [sFold](#sfold)
+  - [RNAi explorer](#rnaiexplorer)
+  - [Oligowalk](#oligowalk)
+  - [SiRNA Design (IDT)](#idt)
+  - [Eurofins_siMax](#eurofins)
+- [Step 2: Scoring quality of siRNA candidates based on design parameters](#step2)
+  - [Parameters](#parameters)
+  - [User inputs](#userinputs)
+
+
+<a name="notes"></a>
+General notes on usage:
 
 - We are designing 21nt siRNA sequences (19nt + 2nt TT overhangs).
 - There are 2 requirements the mRNA sequence you provide as input should satisfy: (a) needs to begin at start codon to ensure proper scoring of parameter 4 (for explanation see step 2), (b) needs to exclude introns which allows us to skip parameter 5 (for explanation see step 2)
 
+<a name="step1"></a>
 ### Step 1: Automate siRNA candidate discovery
 
 In this step, we retrieve siRNA candidate sequences suggested by a variety of design algorithms and softwares. siRNA candidates which are suggested by multiple tools (>3) will be further analysed in step 2 based on a 20-parameter quality scoring system.
@@ -71,10 +90,12 @@ The siDESIGN center by Dharmacon (which was acquired by Horizon Discovery) is ba
 
 The [siRNA design tool](https://eurofinsgenomics.eu/en/ecom/tools/sirna-design/) by Eurofins Genomics allows you to specify which stretch of the coding region should be targeted (the whole sequence is the default), which problematic designs to exclude (>3G/Cs in a row, >A/Us in a row, U at 3' end, excluding all of these is set as default), min. and max. GC content (default: 30-53), and min. distance from start and stop codon (default in both cases: 100).
 
+<a name="step2"></a>
 ### Step 2: Scoring quality of siRNA candidates based on design parameters
 
 In this step we perform mostly automatic scoring of the suggested candidates that step 1 yields. The scoring is based on rational design parameters suggested by [Fakhr et al. (2016)](https://www.nature.com/articles/cgt20164.pdf). This will be particularly useful to justify or explain potential differences in efficacy that we might observe experimentally. Candidates suggested by step 1 and validated by step 2 should in theory have a high chance of working well.
 
+<a name="parameters"></a>
 What are the parameters, and what are their weights?
 1. BLAST search of sense strand (1): this should be done **manually**
 2. BLAST search of antisense strand (1): this should be done **manually**
@@ -97,6 +118,7 @@ What are the parameters, and what are their weights?
 19. Absence of G at 13th nucleotide of sense strand (1)
 20. Presence of U at 10th nucleotide of sense strand (1)
 
+<a name="userinputs"></a>
 ### User inputs
 
 Providing the mRNA target (plain nucleotides & [FASTA format](https://www.bioinformatics.nl/tools/crab_fasta.html)), target name, email. 
