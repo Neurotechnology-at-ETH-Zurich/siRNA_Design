@@ -99,7 +99,9 @@ What are the parameters, and what are their weights?
 
 ### User inputs
 
-Providing the mRNA target (plain nucleotides & [FASTA format](https://www.bioinformatics.nl/tools/crab_fasta.html)), target name, email. Still coming up: select species, GC content, algo combination for siDirect module.
+Providing the mRNA target (plain nucleotides & [FASTA format](https://www.bioinformatics.nl/tools/crab_fasta.html)), target name, email. 
+
+Still coming up: select species, GC content, algo combination for siDirect module.
 
 
 
