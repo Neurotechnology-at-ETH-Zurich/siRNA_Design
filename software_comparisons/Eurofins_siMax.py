@@ -36,6 +36,7 @@ def perform_query_eurofins(chromedriver_path, gene_name, NT_sequence):
 
 def count_results_eurofins(driver):
     
+    WebDriverWait(driver,250).until(EC.presence_of_element_located((By.XPATH, '/html/body/form/div[5]/div[1]/div[4]/div/div/div/div/div[2]/div/div[2]/div/div[1]/div[3]/fieldset/div[1]/table/tbody')))
     rows = driver.find_elements_by_xpath('/html/body/form/div[5]/div[1]/div[4]/div/div/div/div/div[2]/div/div[2]/div/div[1]/div[3]/fieldset/div[1]/table/tbody')
     
     return driver, rows
@@ -46,8 +47,8 @@ def collect_target_positions_eurofins(driver, rows):
     # /html/body/form/div[5]/div[1]/div[4]/div/div/div/div/div[2]/div/div[2]/div/div[1]/div[3]/fieldset/div[1]/table/tbody[6]/tr/td[4]
     
     driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-    #WebDriverWait(driver,250).until(EC.presence_of_element_located((By.XPATH, "/html/body/form/div[5]/div[1]/div[4]/div/div/div/div/div[2]/div/div[2]/div/div[1]/div[3]/fieldset/div[1]/table/tbody1/tr/td[4]")))
     time.sleep(8)
+    #WebDriverWait(driver,250).until(EC.presence_of_element_located((By.XPATH, "/html/body/form/div[5]/div[1]/div[4]/div/div/div/div/div[2]/div/div[2]/div/div[1]/div[3]/fieldset/div[1]/table/tbody1/tr/td[4]")))
     
     positions_list = []
     

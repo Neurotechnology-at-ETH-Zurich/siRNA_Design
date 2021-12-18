@@ -56,7 +56,7 @@ titleposition_wiz, colrow_wiz = find_title_location(targetpositions_wiz, excel_w
 sheet = add_results(targetpositions_wiz, excel_workbook, sheet, colrow_wiz)
 driver.close()
 
-# 2. siDESIGN_center
+# 2. siDESIGN_center ##CHECK WHICH ALGORITHMS ARE BEING SELECTED!!
 print("siDESIGN center analysis")
 # Perform query on siDESIGN website
 driver = perform_query_sidesign(chromedriver_path, gene_name, FASTA_sequence)
