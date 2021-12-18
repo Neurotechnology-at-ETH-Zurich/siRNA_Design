@@ -36,6 +36,8 @@ chromedriver_path = r'C:\Users\User\Downloads\chromedriver_win32 (3)\chromedrive
 # Note: You can find out your google chrome version by clicking Help>About Google Chrome
 filename = "test.xlsx"
 gene_name, NT_sequence, FASTA_sequence, email = collect_input()
+# Save NT sequence to disk
+pickle_positions("NT_sequence", NT_sequence)
 excel_workbook, sheet = generate_workbook(gene_name, NT_sequence, FASTA_sequence, filename)
 
 # 1. siRNA Wizard

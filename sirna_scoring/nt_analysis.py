@@ -56,7 +56,7 @@ WHICH PARAMETERS WILL WE HERE ASSESS?
 """
 
 def read_sequences():
-    path = 'C:/Users/User/Desktop/ETH_NSC/Yanik_lab/Luciferase_siRNA/siRNADesign/siRNADesign/software_comparisons'
+    path = 'C:/Users/User/Desktop/ETH_NSC/Yanik_lab/siRNADesign-master/software_comparisons'
     filename_s = '/triplicate sense sequences'
     filename_as = '/triplicate antisense sequences'
     open_file_s = open(path+filename_s, "rb")
@@ -70,7 +70,6 @@ def read_sequences():
     number_candidates = len(sense_list)
     
     return sense_list, antisense_list, number_candidates
-
 
 def param20(sense_list, number_candidates):
     
@@ -216,9 +215,6 @@ def param12(sense_list, antisense_list, number_candidates):
                 score12[i] = weight12
     
     return score12, weight12
-
-# PERFORM MANUALLY: 
-# 11 (weight 2)	No internal secondary structures and hairpins (oligoanalyzer software by Molecular Biology Insights; Generunner by Hastings software) => I am performing this with RNA fold (uni vienna)
 
 def param10(sense_list, antisense_list, number_candidates):
     
