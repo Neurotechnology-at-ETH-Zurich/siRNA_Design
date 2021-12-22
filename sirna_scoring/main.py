@@ -7,6 +7,7 @@ Created on Mon Nov  1 17:56:13 2021
 from nt_analysis import read_sequences, sum_scores, param4, param6, param7, param8, param9, param10, param12, param13, param14, param15, param16, param17, param18, param19, param20
 from secondarystructure import perform_query_RNAfold, extracting_bases, extracting_dotnotation, findtargetpositions
 import pickle
+import statistics
 
 # unused:
 # from nt_analysis import userinput_collectsequences, excelinput_collectsequences
@@ -44,26 +45,98 @@ score20, weight20 = param20(sense_list, number_candidates)
 
 chromedriver_path = r'C:\Users\User\Downloads\chromedriver_win32 (3)\chromedriver.exe'
 
-def read_NTsequence():
+def readDNAsequence():
     path = r'C:/Users/User/Desktop/ETH_NSC/Yanik_lab/siRNADesign-master/software_comparisons'
     filename_NT = '/NT_sequence'
     open_file_NT = open(path+filename_NT,"rb")
-    NT_sequence = pickle.load(open_file_NT)
+    DNAsequence = pickle.load(open_file_NT)
     
     open_file_NT.close()
     
-    return NT_sequence
+    return DNAsequence
 
-NT_sequence = read_NTsequence()
+DNAsequence = readDNAsequence()
 
 # automatically perform RNAfold query which returns the secondary structure of our target mRNA
-driver = perform_query_RNAfold(chromedriver_path, NT_sequence)
+driver = perform_query_RNAfold(chromedriver_path, DNAsequence)
 # extract mRNA sequence; this is of course the same for MFE and centroid secondary structure prediction; I just repeated this to be safe
 bases_MFE = extracting_bases(driver,xpath_bases='/html/body/div[2]/div[2]/div/div[3]/pre[1]/span/pre' )
 bases_centroids = extracting_bases(driver,xpath_bases='/html/body/div[2]/div[2]/div/div[3]/pre[3]/span/pre')
 # extract secondary structure prediction for MFE and centroids; this format is known as dot notation (https://www.tbi.univie.ac.at/RNA/ViennaRNA/doc/html/rna_structure_notations.html#dot-bracket-notation)
 dots_MFE = extracting_dotnotation(driver,xpath_dots='/html/body/div[2]/div[2]/div/div[3]/pre[2]/span/pre')
 dots_centroids = extracting_dotnotation(driver,xpath_dots='/html/body/div[2]/div[2]/div/div[3]/pre[4]/span/pre')
+"""
+optimal secondary structure of siRNA target site:
+high overall number of unpaired bases
+5' loop
+3' loop
+central loops
+"""
+
+def targetstructure_scoring(bases_MFE, dots_MFE, sense_list):
+
+    startloop_list = []
+    endloop_list = []
+    nr_unpaired_list = []
+    nr_loops_list = []
+
+    for i in range(len(sense_list)):
+        # variable containing sense sequence
+        sense_TT = sense_list[i]
+        sense = sense_TT[:-2]
+    
+        # retrieve position on mRNA
+        targetpos = bases_MFE.index(sense) # note that the real position is targetpos+1, remember that python starts at 0!
+        # retrieve pairing information (MFE)
+        pairing_MFE = dots_MFE[targetpos:targetpos+21]
+    
+        # evaluate presence of 5' loop; weight=0.75
+        startloop = pairing_MFE[0:3]
+        if startloop == '...':
+            startloop_list.append(0.75)
+        else:
+            startloop_list.append(0)
+        # evaluate presence of  3' loop; weight=0.75
+        endloop = pairing_MFE[-3:]
+        if endloop == '...':
+            endloop_list.append(0.75)
+        else:
+            endloop_list.append(0)
+        # evaluate overall number of unpaired bases; weight=0.25
+        nr_unpaired = pairing_MFE.count('.')
+        nr_unpaired_list.append(nr_unpaired)
+        # evaluate total number of loops (i.e. including central loops); weight=0.25
+        nr_loops = pairing_MFE.count('...')
+        nr_loops_list.append(nr_loops)
+        
+        # check whether overall number of unpaired bases is above average
+        nr_unpaired_scores = []
+        for i in range(len(nr_unpaired_list)):
+            if nr_unpaired_list[i] >= statistics.mean(nr_unpaired_list):
+                nr_unpaired_scores.append(0.25)
+            else:
+                nr_unpaired_scores.append(0)
+        
+        # check whether total number of loops is above average
+        nr_loops_scores = []
+        for i in range(len(nr_loops_list)):
+            if nr_loops_list[i] >= statistics.mean(nr_loops_list):
+                nr_loops_scores.append(0.25)
+            else:
+                nr_loops_scores.append(0)
+                
+        # calculate total structure score for each sirna
+        structure_scores = []
+        for (item1, item2, item3, item4) in zip(startloop_list, endloop_list, nr_unpaired_scores, nr_loops_scores):
+            print(item1)
+            print(item2)
+            print(item3)
+            print(item4)
+            structure_scores.append(item1+item2+item3+item4)
+        
+    return startloop_list, endloop_list, nr_unpaired_scores, nr_loops_scores, structure_scores
+    
+
 
 ######
 
