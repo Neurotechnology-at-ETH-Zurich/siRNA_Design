@@ -377,15 +377,24 @@ def param4(number_candidates):
 
 # 1: BLAST of sense strand
 
-def sum_scores(number_candidates, score4, score6, score7, score8, score9, score10, score12, score13, score14, score15, score16, score17, score18, score19, score20, weight4, weight6, weight7, weight8, weight9, weight10, weight12, weight13, weight14, weight15, weight16, weight17, weight18, weight19, weight20):
-    
+def totalscores(number_candidates, score4, weight4, score6, weight6, score7, weight7, score8, weight8, score9, weight9, score10, weight10, score12, weight12, score13, weight13, score14, weight14, score15, weight15, score16, weight16, score17, weight17, score18, weight18, score19, weight19, score20, weight20, structure_scores, weight_structure_scores):
+
+    # Calculating max. possible score & final score for each siRNA candidate
+
     sums_list = []
     for i in range(number_candidates):
-        sums_list.append(score4[i] + score6[i] + score7[i] + score8[i] + score9[i] + score10[i] + score12[i] + score13[i] + score14[i] + score15[i] + score16[i] + score17[i] + score18[i] + score19[i] + score20[i])
+        sums_list.append(score4[i] + score6[i] + score7[i] + score8[i] + score9[i] + score10[i] + score12[i] + score13[i] + score14[i] + score15[i] + score16[i] + score17[i] + score18[i] + score19[i] + score20[i] + structure_scores[i])
+            
+        max_score = weight4 + weight6 + weight7 + weight8 + weight9 + weight10 + weight12 + weight13 + weight14 + weight15 + weight16 + weight17 + weight18 + weight19 + weight20 + weight_structure_scores
         
-    #sums_list = score6 + score7 + score8 + score9 + score10 + score12 + score13 + score14 + score15 + score16 + score17 + score18 + score19 + score20
-    max_score = weight4 + weight6 + weight7 + weight8 + weight9 + weight10 + weight12 + weight13 + weight14 + weight15 + weight16 + weight17 + weight18 + weight19 + weight20
-    
     return sums_list, max_score
+
+def percentages_score(sums_list, max_score):
+    percentages_list = []
+    for i in range(len(sums_list)):
+        percentages_list.append((sums_list[i]/max_score)*100)
+        
+    return percentages_list
+        
 
 
