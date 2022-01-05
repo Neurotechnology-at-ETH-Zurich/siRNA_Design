@@ -91,19 +91,20 @@ percentages_list = percentages_score(sums_list, max_score)
 
 # Get 3 highest-scoring siRNAs and the positions they target
 score = percentages_list
-sequence = sense_list
+sequence = sense_list # remember this is the passenger strand which matches the mRNA target sequence. antisense=guide, complementary to mRNA
 
 top3 = sorted(zip(score, sequence), reverse=True)[:3]
 
-# Remaining parameters to assess manually:
-# 1: BLAST of sense strand (issue of overlap vs. e-value: what are acceptable e-values for sirna sequences?)
-# 2: BLAST of antisense strand
+"""
+REMAINING PARAMETERS TO ASSESS:
+1: BLAST of sense strand (issue of overlap vs. e-value: what are acceptable e-values for sirna sequences?)
+2: BLAST of antisense strand
+For guidance on how to score this, please consult step 3 ("BLAST search to avoid off-target effects") in the user manual of the siRNA_Design pipeline.
 
-# What we don't need to check in the case of luciferase, but will have to add for future target genes:
-# 3: not located at SNP site
-# 5: not in the intron -> try ExInt database https://www.ncbi.nlm.nih.gov/pmc/articles/PMC99089/
-
-
+What we don't need to check in the case of luciferase, but will have to add for future target genes:
+3: not located at SNP site
+5: not in the intron -> try ExInt database https://www.ncbi.nlm.nih.gov/pmc/articles/PMC99089/
+"""
 
 
 
