@@ -138,7 +138,7 @@ TO-DO: select species, GC content, algo combination for siDirect module.
 We want to use BLAST (short for Basic Local Alignment Search Tool) to check whether both our antisense strand (the guide strand which is complementary to the mRNA target sequence) and the sense strand (passenger strand, matches mRNA target sequence) are complementary to any gene/mRNA sequence in our organism other than the one we want to target. Both sense and antisense strands should be checked via blast with reference sequence database (Refseq-RNA database) of the desired organism to reduce the risk of silencing unintended genes. 
 
 <a name="ncbi"></a>
-Using the NCBI Blast tool: Which settings to choose?
+**Using the NCBI Blast tool: Which settings to choose?**
 
 - Remember to remove the TT overhang from your sense/antisense sequence before running your alignment check.
 - As Blast has some limitations w.r.t. alignment of small sequences, some parameters of blast's algorithms should be changed.
@@ -147,7 +147,7 @@ Using the NCBI Blast tool: Which settings to choose?
 - For more stringent specificity checking, set the Expect threshold to a value as high as 1000 or 3000 (similar to primer blast program).
 
 <a name="results"></a>
-Understanding BLAST output
+**Understanding BLAST output**
 
 The statistics reported in the BLAST output tell you different things about how meaningful your alignment is.
 
@@ -174,7 +174,7 @@ https://www.ncbi.nlm.nih.gov/BLAST/tutorial/Altschul-1.html
 https://www.ccg.unam.mx/~vinuesa/tlem/pdfs/Bioinformatics_explained_BLAST.pdf
 
 <a name="evaluate"></a>
-Evaluating BLAST results: what ranges of values are good?
+**Evaluating BLAST results: what ranges of values are good?**
 
 - In general, real similarity is indicated by: high identity value (>98% sequence similarity), high query cover value (>70%), low e-value (as close to 0 as possible).
 - **Coverage**: Queries with >78% coverage with the subject are considered as a risk factor for off-target effects
