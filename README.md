@@ -22,7 +22,7 @@ Collection of tools to retrieve siRNA (small interfering RNA) candidate sequence
   - [Evaluating BLAST results](#evaluate)
 
 <a name="notes"></a>
-General notes on usage:
+* *General notes on usage* *:
 
 - We are designing 21nt siRNA sequences (19nt + 2nt TT overhangs).
 - There are 2 requirements the mRNA sequence you provide as input should satisfy: (a) needs to begin at start codon to ensure proper scoring of parameter 4 (for explanation see step 2), (b) needs to exclude introns which allows us to skip parameter 5 (for explanation see step 2)
@@ -100,11 +100,11 @@ In this step we perform mostly automatic scoring of the suggested candidates tha
 
 <a name="parameters"></a>
 What are the parameters, and what are their weights?
-1. BLAST search of sense strand (1): this should be done **manually**
-2. BLAST search of antisense strand (1): this should be done **manually**
+1. BLAST search of sense strand (1): this should be done **manually** in step 3
+2. BLAST search of antisense strand (1): this should be done **manually** in step 3
 3. Not located at SNP site (1): in the case of luciferase, this is not necessary; therefore this parameter is, for now, not implemented yet.
 4. Not located in first 75 bases from start codon (1)
-5. Not in the intron (1): We can exclude this parameter as our input sequence should already exclude introns.
+5. Not in the intron (1): We can exclude this parameter as **our input sequence should already exclude introns**.
 6. GC content of 36-52% (1). Note: Amarzguioui et al. suggest 31.6-57.9, one could consider being a bit more tolerant with this parameter. The distribution of GCs probably matters more than total content.
 7. Asymmetrical base pairing in the duplex (2): more A/U at 5' of antisense strand and more G/C at 5' of sense strand
 8. Energy valley in the 9-14th nucleotide of the sense strand (2)
