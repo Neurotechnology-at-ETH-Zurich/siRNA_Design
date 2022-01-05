@@ -16,7 +16,10 @@ Collection of tools to retrieve siRNA (small interfering RNA) candidate sequence
 - [Step 2: Scoring quality of siRNA candidates based on design parameters](#step2)
   - [Parameters](#parameters)
   - [User inputs](#userinputs)
-
+- [Step 3: BLAST search to avoid off-target effects](#blast)
+  - [Using the NCBI Blast tool](#ncbi)
+  - [Understanding BLAST output](#results)
+  - [Evaluating BLAST results](#evaluate)
 
 <a name="notes"></a>
 General notes on usage:
@@ -123,7 +126,55 @@ What are the parameters, and what are their weights?
 
 Providing the mRNA target (plain nucleotides & [FASTA format](https://www.bioinformatics.nl/tools/crab_fasta.html)), target name, email. 
 
-Still coming up: select species, GC content, algo combination for siDirect module.
+Still TO-DO: select species, GC content, algo combination for siDirect module.
 
+<a name="blast"></a>
+### Step 3: BLAST search to avoid off-target effects
 
+We want to use BLAST (short for Basic Local Alignment Search Tool) to check whether both our antisense strand (the guide strand which is complementary to the mRNA target sequence) and the sense strand (passenger strand, matches mRNA target sequence) are complementary to any gene/mRNA sequence in our organism other than the one we want to target. Both sense and antisense strands should be checked via blast with reference sequence database (Refseq-RNA database) of the desired organism to reduce the risk of silencing unintended genes. 
 
+<a name="ncbi"></a>
+Using the NCBI Blast tool: Which settings to choose?
+
+- As Blast has some limitations w.r.t. alignment of small sequences, some parameters of blast's algorithms should be changed.
+- As we are performing nucleotide-nucleotide compariisons, we choose the Blastn  program. 
+- Set the word size to seven in order to have more precise alignment.
+- For more stringent specificity checking, set the Expect threshold to a value as high as 1000 or 3000 (similar to primer blast program).
+
+<a name="results"></a>
+Understanding BLAST output
+
+The statistics reported in the BLAST output tell you different things about how meaningful your alignment is.
+
+For example, coverage tells you whether you have a long or short alignment. Combined with the identity value, it can tell you whether you have a long, low identity match (in the case of genes, this could e.g. signify an orthologous gene), or a short, high identity match (which in the case of genes could signify similar protein domains/active sites). The e-value is a description of how likely it is that the match could have arisen by chance. We will now examine these metrics in more detail.
+
+The **score** is the least informative metric as it is length-dependent. A score of 1000 could arise from a match with a query sequence with 10000 residues, in which case they would be unrelated, or from a match with a 300 residue query sequence, in which case it would signify a true relationship. **Max score** = the highest alignment score calculated from the sum of the rewards for matched nucleotides. **Total score** = the sum of alignment scores of all segments from the same subject sequence
+
+The **e-value**, or expect value, is not length-dependent and often more indicative of a true relationship. It represents the number of alignments expected by chance with the calculated score or better. The lower the e-value, the more statistically significant the match. E.g. an e-value of 0.01 signifies a 1% chance of finding this match in a database of random sequences.
+
+2 factors that strongly influence e-values are (i) the length of the sequence - it is easier to find a perfect match to a shorter sequence than it is to a longer sequence, and (ii) the size of database - it is easier to find a match in a larger database than in a smaller one. The e-value equation is  E=K * m * n * e^( -lambda * S); K and lambda are constants precalculated for the database m=query length, n=database length, S=score of the alignment (raw score).
+
+Raw scores, as mentioned above, are not length normalized, therefore short query sequences cannot achieve high S-scores. The combination of large databases and **short query sequences can lead to relatively high e-values, even if the alignment is virtually identical**. These high e-values make sense because shorter sequences have a higher probability of occuring in the database purely by chance.
+
+**Percent identity** reports on the percentage of basepairs that are the same between your sequence and reference sequence. It is possible that you have a 99% identity match, but only across 35% of your sequence. The latter would be indicated by the **query coverage** metric. In this case, you would have no information on how closely the other 65% of your sequence matches up. 
+
+The **Query coverage** indicates the % of query sequence that overlaps with the reference sequence. If the target sequence in the database spans the whole query sequence, then the query cover is 100%. The smaller the qurey coverage, the less data (nucleotides) are being compared and chance error are higher. E.g. if it is 21%, only 21% of the query sequence matches the subject sequence. If the submitted query was 2889 bases long, 606 were found to align with the subject sequence in the database.
+
+References:
+Kim YJ. Computational siRNA design considering alternative splicing. Methods Mol Biol 623, 81–92 (2010)
+Fakhr E et al. Precise and efficient siRNA design: a key point in competent gene silencing. Cancer Gene Ther 23, 73–82 (2016)
+https://ase.tufts.edu/chemistry/walt/sepa/Activities/BLASTpractice.pdf
+https://usuhs.libguides.com/c.php?g=468091&p=3260303
+https://www.ncbi.nlm.nih.gov/BLAST/tutorial/Altschul-1.html
+https://www.ccg.unam.mx/~vinuesa/tlem/pdfs/Bioinformatics_explained_BLAST.pdf
+
+<a name="evaluate"></a>
+Evaluating BLAST results: what ranges of values are good?
+
+- In general, real similarity is indicated by: high identity value (>98% sequence similarity), high query cover value (>70%), low e-value (as close to 0 as possible).
+- **Coverage**: Queries with >78% coverage with the subject are considered as a risk factor for off-target effects
+- **Percent identity**: 15 out of 19 nucleotides matching is tolerable.
+- **Further considerations**: it is recommended that candidates that are homologous with >7 nucleotides in undesired genes should be discarded. Note that percent identity, to my understanding, does not necessary consider order though, and that the recommendation refers to stretches of >7 matching nucleotides. Further, it must be mentioned that the attachment of inner nucleotides of siRNA to unwanted genes is more detrimental than the attachment of 3' or 5' ends.
+- According to siDirect software, sense and antisense strands with ⩾3 mismatches between siRNA sequence and unintended targets counts as high specificity.
+- In summary, less than 78% query coverage with other genes, ⩽15/16 nucleotides out of 19 matching with the respective siRNA, is believed to be tolerable.
+- However there is always a probability of unpredictable off-target effects for siRNAs.
