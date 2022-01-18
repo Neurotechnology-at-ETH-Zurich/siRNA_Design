@@ -183,3 +183,7 @@ https://www.ccg.unam.mx/~vinuesa/tlem/pdfs/Bioinformatics_explained_BLAST.pdf
 - According to siDirect software, sense and antisense strands with ⩾3 mismatches between siRNA sequence and unintended targets counts as high specificity.
 - In summary, less than 78% query coverage with other genes, ⩽15/16 nucleotides out of 19 matching with the respective siRNA, is believed to be tolerable.
 - However there is always a probability of unpredictable off-target effects for siRNAs.
+
+Note: it might be worth it to check the precise locations of alignment along the siRNA input sequence. Although most siRNA design algorithms include BLAST to identify off-target transcripts until near-perfect complementarity, off-targeting primarily occurs when the seed region (nt 2-8) pairs with sequences within 3'-untranslated regions of unintended mRNAs, which can induce translational repression.
+
+Also, you can check physiological location of top hit alignments (e.g. if you are targeting the brain in a way that mostly avoids your siRNA cargo being delivered to other organs, and the off-target hits are not expressed in the brain, they might not be so relevant and can potentially be neglected.
