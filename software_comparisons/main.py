@@ -30,7 +30,7 @@ b) Also make sure the sequence does not include introns => if it would, we would
 """
 
 path = "C:/Users/User/Desktop/ETH_NSC/Yanik_lab/Luciferase_siRNA/Test_CodePipeline/" # is this a) correct, b) necessary?
-chromedriver_path = r'C:\Users\User\Downloads\chromedriver_win32 (3)\chromedriver.exe'
+chromedriver_path = r'C:\Users\User\Downloads\new_chromedriver_win32\chromedriver.exe'
 # If you get an error here, an update might be needed; therefore download the suitable chromedriver version for your chrome version here:
 # https://sites.google.com/chromium.org/driver/downloads?authuser=0 and add new path to exe file
 # Note: You can find out your google chrome version by clicking Help>About Google Chrome
@@ -39,6 +39,7 @@ gene_name, NT_sequence, FASTA_sequence, email = collect_input()
 # Save NT sequence to disk
 pickle_positions("NT_sequence", NT_sequence)
 excel_workbook, sheet = generate_workbook(gene_name, NT_sequence, FASTA_sequence, filename)
+
 
 # 1. siRNA Wizard
 print("siRNA Wizard analysis")
@@ -133,41 +134,124 @@ driver.close()
 
 # 6: OLIGOWALK
 print("Oligowalk analysis")
-# Perform query on Oligowalk website
-driver = perform_query_oligowalk(chromedriver_path, gene_name, NT_sequence, email)
-# Wait for email with results to be sent...then copy link to the siRNA candidates and paste when prompted to in the next function
-# e.g. http://rna.urmc.rochester.edu/cgi-bin/server_exe/oligowalk/oligowalk_out.cgi?file=oligowalk950865362378867summary.htm
-# Count number of results with probability of being efficient siRNA over 80%
-driver, rownumber_oligowalk, resultscount_oligowalk = count_results_oligowalk(chromedriver_path)
-# Collect target positions
-targetpositions_oligowalk = collect_target_positions_oligowalk(driver, resultscount_oligowalk)
-# Save target positions to disk
-pickle_positions("oligowalk_list", targetpositions_oligowalk)
-# Find location in excel file to add Oligowalk results to
-titleposition_oligowalk, colrow_oligowalk = find_title_location(targetpositions_oligowalk, excel_workbook, sheet, cell_title='Oligowalk')
-# Add results to excel file
-sheet = add_results(targetpositions_oligowalk, excel_workbook, sheet, colrow_oligowalk)
-driver.close()
+
+
+# Check whether sequence is over 10k nucleotides
+if len(NT_sequence) < 10000:
+    print("Sequence length ok for Oligowalk analysis")
+    
+    # Perform query on Oligowalk website
+    driver = perform_query_oligowalk(chromedriver_path, gene_name, NT_sequence, email)
+    # Wait for email with results to be sent...then copy link to the siRNA candidates and paste when prompted to in the next function
+    # e.g. http://rna.urmc.rochester.edu/cgi-bin/server_exe/oligowalk/oligowalk_out.cgi?file=oligowalk950865362378867summary.htm
+    # Count number of results with probability of being efficient siRNA over 80%
+    driver, rownumber_oligowalk, resultscount_oligowalk = count_results_oligowalk(chromedriver_path)
+    # Collect target positions
+    targetpositions_oligowalk = collect_target_positions_oligowalk(driver, resultscount_oligowalk)
+    # Save target positions to disk
+    pickle_positions("oligowalk_list", targetpositions_oligowalk)
+    # Find location in excel file to add Oligowalk results to
+    titleposition_oligowalk, colrow_oligowalk = find_title_location(targetpositions_oligowalk, excel_workbook, sheet, cell_title='Oligowalk')
+    # Add results to excel file
+    sheet = add_results(targetpositions_oligowalk, excel_workbook, sheet, colrow_oligowalk)
+    driver.close()
+    
+else:
+    print("Sequence too long, needs to be split up for Oligowalk analysis")
+    
+    sequence_part1 = NT_sequence[:9999]
+    sequence_part2 = NT_sequence[9979:] # include the 20nts before cutoff to make sure that no potential 21nt candidate is affected by our splitting of the data
+
+    # Perform query for part 1    
+    gene_name_oligowalk = gene_name + 'pt1'
+    driver = perform_query_oligowalk(chromedriver_path, gene_name_oligowalk, sequence_part1, email)
+    driver, rownumber_oligowalk, resultscount_oligowalk = count_results_oligowalk(chromedriver_path)
+    targetpositions_oligowalk = collect_target_positions_oligowalk(driver, resultscount_oligowalk)
+    # example link: http://rna.urmc.rochester.edu/cgi-bin/server_exe/oligowalk/oligowalk_out.cgi?file=oligowalk734117103348584summary.htm
+    
+    # Perform query for part 2
+    gene_name_oligowalk = gene_name + 'pt2'
+    driver = perform_query_oligowalk(chromedriver_path, gene_name_oligowalk, sequence_part1, email)
+    driver, rownumber_oligowalk, resultscount_oligowalk = count_results_oligowalk(chromedriver_path)
+    targetpositions_oligowalk2 = collect_target_positions_oligowalk(driver, resultscount_oligowalk) 
+    # example link: http://rna.urmc.rochester.edu/cgi-bin/server_exe/oligowalk/oligowalk_out.cgi?file=oligowalk689344328668998summary.htm 
+     
+    # Combine the results into one list
+    targetpositions_oligowalk.extend(targetpositions_oligowalk2)
+    
+    # Save target positions to disk
+    pickle_positions("oligowalk_list", targetpositions_oligowalk)
+    # Find location in excel file to add Oligowalk results to
+    titleposition_oligowalk, colrow_oligowalk = find_title_location(targetpositions_oligowalk, excel_workbook, sheet, cell_title='Oligowalk')
+    # Add results to excel file
+    sheet = add_results(targetpositions_oligowalk, excel_workbook, sheet, colrow_oligowalk)
+    driver.close()
+
 
 # 7. sFold hits over 12
-print("sFold analysis: identifying candidates with score > 12")
-# Perform query on sFold website
-perform_query_sFold(chromedriver_path, gene_name, NT_sequence, email)
-# Retrieve results over 12 (need  to paste link received in email, e.g. http://sfold.wadsworth.org/output/1115053901.27294/)
-results_link, driver, targetpositions_sfold = thresh_results(chromedriver_path)
-# Save target positions to disk
-pickle_positions("sFold_list", targetpositions_sfold)
-# Find location in excel file to add sFold results to
-titleposition_sfold, colrow_sfold = find_title_location(targetpositions_sfold, excel_workbook, sheet, cell_title='sFold_over12')
-# Add results to excel file
-sheet = add_results(targetpositions_sfold, excel_workbook, sheet, colrow_sfold)
-driver.close()
+if len(NT_sequence) < 10000:
+    print("Sequence length ok for sFold analysis")
 
-# Collect data on all sense and antisense sequences for position 3 to 1635
-sense_sequences, antisense_sequences, allstartpositions = all_sequences(results_link, chromedriver_path)
-pickle_positions("sense_list", sense_sequences)
-pickle_positions("antisense_list", antisense_sequences)
-pickle_positions("allstartpositions", allstartpositions)
+    print("sFold analysis: identifying candidates with score > 12")
+    # Perform query on sFold website
+    perform_query_sFold(chromedriver_path, gene_name, NT_sequence, email)
+    # Retrieve results over 12 (need  to paste link received in email, e.g. http://sfold.wadsworth.org/output/1115053901.27294/)
+    results_link, driver, targetpositions_sfold = thresh_results(chromedriver_path)
+    # Save target positions to disk
+    pickle_positions("sFold_list", targetpositions_sfold)
+    # Find location in excel file to add sFold results to
+    titleposition_sfold, colrow_sfold = find_title_location(targetpositions_sfold, excel_workbook, sheet, cell_title='sFold_over12')
+    # Add results to excel file
+    sheet = add_results(targetpositions_sfold, excel_workbook, sheet, colrow_sfold)
+    driver.close()
+
+    # Collect data on all sense and antisense sequences for position 3 to 1635
+    sense_sequences, antisense_sequences, allstartpositions = all_sequences(results_link, chromedriver_path)
+    pickle_positions("sense_list", sense_sequences)
+    pickle_positions("antisense_list", antisense_sequences)
+    pickle_positions("allstartpositions", allstartpositions)
+    
+else:
+    print("Sequence too long, needs to be split up for sFold analysis")
+    
+    sequence_part1 = NT_sequence[:9999]
+    sequence_part2 = NT_sequence[9979:] # include the 20nts before cutoff to make sure that no potential 21nt candidate is affected by our splitting of the data
+
+    # Perform query for part 1    
+    gene_name_sFold = gene_name + 'pt1'
+    # Perform query on sFold website
+    perform_query_sFold(chromedriver_path, gene_name_sFold, sequence_part1, email)
+    # Retrieve results over 12 (need  to paste link received in email, e.g. http://sfold.wadsworth.org/output/1115053901.27294/)
+    results_link, driver, targetpositions_sfold = thresh_results(chromedriver_path)
+    # example link: https://sfold.wadsworth.org/output/0526041153.10402/sirna.html
+    
+    """
+    NEED TO FIX AND PUT BACK IN
+    # Perform query for part 2 ################################## FIX THIS!!!!!!!!! ###################
+    gene_name_sFold = gene_name + 'pt2'
+    # Perform query on sFold website
+    perform_query_sFold(chromedriver_path, gene_name_sFold, sequence_part2, email)
+    # Retrieve results over 12 (need  to paste link received in email, e.g. http://sfold.wadsworth.org/output/1115053901.27294/)
+    results_link, driver, targetpositions_sfold2 = thresh_results(chromedriver_path)
+    # example link: ADD
+    
+    # Combine the results into one list
+    targetpositions_sfold.extend(targetpositions_sfold2)
+    """
+    
+    # Save target positions to disk
+    pickle_positions("sFold_list", targetpositions_sfold)
+    # Find location in excel file to add sFold results to
+    titleposition_sfold, colrow_sfold = find_title_location(targetpositions_sfold, excel_workbook, sheet, cell_title='sFold_over12')
+    # Add results to excel file
+    sheet = add_results(targetpositions_sfold, excel_workbook, sheet, colrow_sfold)
+    driver.close()
+
+    # Collect data on all sense and antisense sequences for position 3 to 1635
+    sense_sequences, antisense_sequences, allstartpositions = all_sequences(results_link, chromedriver_path)
+    pickle_positions("sense_list", sense_sequences)
+    pickle_positions("antisense_list", antisense_sequences)
+    pickle_positions("allstartpositions", allstartpositions)
 
 """
 # 8. IDT: UNFINISHED

@@ -7,6 +7,7 @@ Created on Mon Nov  1 17:56:13 2021
 import os
 os.chdir(r'C:\Users\User\Desktop\ETH_NSC\Yanik_lab\siRNADesign-master\sirna_scoring')
 
+from helper_functions import pickle_positions
 from nt_analysis import read_sequences, totalscores, percentages_score, param4, param6, param7, param8, param9, param10, param12, param13, param14, param15, param16, param17, param18, param19, param20
 from secondarystructure import readDNAsequence, perform_query_RNAfold, extracting_bases, extracting_dotnotation, findtargetpositions, targetstructure_scoring
 
@@ -47,7 +48,7 @@ score20, weight20 = param20(sense_list, number_candidates)
     
 weight_structure_scores = 2
 
-chromedriver_path = r'C:\Users\User\Downloads\chromedriver_win32 (3)\chromedriver.exe'
+chromedriver_path = r'C:\Users\User\Downloads\chromedriver_win32 (4)\chromedriver.exe'
 
 # retrieve DNA sequence that was initially given as user input
 DNA_sequence = readDNAsequence()
@@ -94,6 +95,9 @@ score = percentages_list
 sequence = sense_list # remember this is the passenger strand which matches the mRNA target sequence. antisense=guide, complementary to mRNA
 
 top3 = sorted(zip(score, sequence), reverse=True)[:3]
+
+# Save top 3 sequences
+pickle_positions("top3 sequences", top3)
 
 """
 REMAINING PARAMETERS TO ASSESS:
