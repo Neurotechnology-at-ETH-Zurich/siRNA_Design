@@ -22,10 +22,9 @@ Collection of tools to retrieve siRNA (small interfering RNA) candidate sequence
   - [Evaluating BLAST results](#evaluate)
 
 <a name="notes"></a>
-* *General notes on usage* *:
-
+**General notes on usage**:
 - We are designing 21nt siRNA sequences (19nt + 2nt TT overhangs).
-- There are 2 requirements the mRNA sequence you provide as input should satisfy: (a) needs to begin at start codon to ensure proper scoring of parameter 4 (for explanation see step 2), (b) needs to exclude introns which allows us to skip parameter 5 (for explanation see step 2)
+- There are 2 requirements which the mRNA sequence you provide as input should satisfy; the need for these will become clear in step 2, where the individual scoring parameters are explained. (a) needs to begin at start codon to ensure proper scoring of parameter 4; (b) needs to exclude introns which allows us to skip parameter 5.
 
 <a name="step1"></a>
 ### Step 1: Automate siRNA candidate discovery
@@ -110,7 +109,7 @@ What are the parameters, and what are their weights?
 8. Energy valley in the 9-14th nucleotide of the sense strand (2)
 9. GC repeat less than 3 (0.5)
 10. AT repeat less than 4 (0.5)
-11. No internal secondary structures and hairpins (2): This needs to be checked **manually**, e.g. using the RNAfold web server
+11. No internal secondary structures and hairpins (2): The secondary structure predictions (MFE and centroid) are retrieved from the RNAfold web server. [The implementation of this parameter will be further explained below.](#secondarystructure)
 12. 3'-TT overhangs (1)
 13. Weak base pair at 5'-end of antisense (1): presence of A/U
 14. Strong base pair at 5'-end of sense (1): presence of G/C
@@ -121,12 +120,17 @@ What are the parameters, and what are their weights?
 19. Absence of G at 13th nucleotide of sense strand (1)
 20. Presence of U at 10th nucleotide of sense strand (1)
 
+<a name="secondarystructure"></a>
+The file secondarystructure.py retrieves the input DNA sequence, inputs these to the [RNAfold server](http://rna.tbi.univie.ac.at/cgi-bin/RNAWebSuite/RNAfold.cgi), which converts it to the RNA sequence, and then scrapes both the **minimum free energy prediction** as well as the **centroid secondary structure** (=the structure with the minimum total base-pair distance to all structures in the thermodynamic ensemble) off the site, once they have been computed. To ensure robustness we score the secondary structure of both MFE and centroid predictions and then take the average, however some preliminary tests showed that for our sequences tested so far, the scores for the predictions of both models were identical.
+
+The format in which the RNA structure is returned is **dot-bracked notation**. The characters "(" and ")" correspond to the 5' base and the 3' base in the base-pair, respectively, while "." denotes an unpaired base. We are particularly interested in the **unpaired bases**. Roughly speaking, the less the mRNA target sequence is folded onto itself, the more accessible it is for our siRNA. However, the location of unpaired bases is crucial. Gredell et al. [(2008)](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2658823/) showed that siRNAs targeting regions of the mRNA predicted to have unpaired 5'- and 3'-ends resulted in greater gene silencing. Therefore, we check for the presence of these so-called **5'- and 3'-loops**. Out of 2 points which can be awarded to a target structure, 0.75 are given for the presence of a 5' loop, another 0.75 for a 3' loop, and the remaining 0.5 are split between "total number of unpaired bases is above average" and "total number of loops is above average". As mentioned before, the  score x/2 is calculated both for the MFE and centroid predicted structure, and then the average of these two scores is calculated. This then constitutes the structure score of an siRNA candidate.
+
 <a name="userinputs"></a>
 ### User inputs
 
-Providing the mRNA target (plain nucleotides & [FASTA format](https://www.bioinformatics.nl/tools/crab_fasta.html)), target name, email. 
+The user, when running the main.py file in the software_comparisons module, needs to input the mRNA target (plain nucleotides & [FASTA format](https://www.bioinformatics.nl/tools/crab_fasta.html)), a name for your query (e.g. fireflyluc) which only contains letter, and your email, so that the oligowalk and sfold results link can be sent to you once the computation finishes. Further customisable parameters will be added. 
 
-Still TO-DO: select species, GC content, algo combination for siDirect module.
+TO-DO: select species, GC content, algo combination for siDirect module.
 
 <a name="blast"></a>
 ### Step 3: BLAST search to avoid off-target effects
@@ -134,15 +138,16 @@ Still TO-DO: select species, GC content, algo combination for siDirect module.
 We want to use BLAST (short for Basic Local Alignment Search Tool) to check whether both our antisense strand (the guide strand which is complementary to the mRNA target sequence) and the sense strand (passenger strand, matches mRNA target sequence) are complementary to any gene/mRNA sequence in our organism other than the one we want to target. Both sense and antisense strands should be checked via blast with reference sequence database (Refseq-RNA database) of the desired organism to reduce the risk of silencing unintended genes. 
 
 <a name="ncbi"></a>
-Using the NCBI Blast tool: Which settings to choose?
+**Using the NCBI Blast tool: Which settings to choose?**
 
+- Remember to remove the TT overhang from your sense/antisense sequence before running your alignment check.
 - As Blast has some limitations w.r.t. alignment of small sequences, some parameters of blast's algorithms should be changed.
 - As we are performing nucleotide-nucleotide compariisons, we choose the Blastn  program. 
 - Set the word size to seven in order to have more precise alignment.
 - For more stringent specificity checking, set the Expect threshold to a value as high as 1000 or 3000 (similar to primer blast program).
 
 <a name="results"></a>
-Understanding BLAST output
+**Understanding BLAST output**
 
 The statistics reported in the BLAST output tell you different things about how meaningful your alignment is.
 
@@ -169,7 +174,7 @@ https://www.ncbi.nlm.nih.gov/BLAST/tutorial/Altschul-1.html
 https://www.ccg.unam.mx/~vinuesa/tlem/pdfs/Bioinformatics_explained_BLAST.pdf
 
 <a name="evaluate"></a>
-Evaluating BLAST results: what ranges of values are good?
+**Evaluating BLAST results: what ranges of values are good?**
 
 - In general, real similarity is indicated by: high identity value (>98% sequence similarity), high query cover value (>70%), low e-value (as close to 0 as possible).
 - **Coverage**: Queries with >78% coverage with the subject are considered as a risk factor for off-target effects
@@ -178,3 +183,7 @@ Evaluating BLAST results: what ranges of values are good?
 - According to siDirect software, sense and antisense strands with ⩾3 mismatches between siRNA sequence and unintended targets counts as high specificity.
 - In summary, less than 78% query coverage with other genes, ⩽15/16 nucleotides out of 19 matching with the respective siRNA, is believed to be tolerable.
 - However there is always a probability of unpredictable off-target effects for siRNAs.
+
+Note: it might be worth it to check the precise locations of alignment along the siRNA input sequence. Although most siRNA design algorithms include BLAST to identify off-target transcripts until near-perfect complementarity, off-targeting primarily occurs when the seed region (nt 2-8) pairs with sequences within 3'-untranslated regions of unintended mRNAs, which can induce translational repression.
+
+Also, you can check physiological location of top hit alignments (e.g. if you are targeting the brain in a way that mostly avoids your siRNA cargo being delivered to other organs, and the off-target hits are not expressed in the brain, they might not be so relevant and can potentially be neglected.
