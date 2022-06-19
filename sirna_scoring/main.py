@@ -16,6 +16,14 @@ from secondarystructure import readDNAsequence, perform_query_RNAfold, extractin
 # from nt_analysis import userinput_collectsequences, excelinput_collectsequences
 
 """
+TODO: SAVE THE SCORE PER PARAMETER AND TOTAL SCORE FOR EACH PARAMETER IN AN EXCEL
+"""
+
+"""
+TODO: ADD CODE FOR TOO LONG NUCLEOTIDES
+"""
+
+"""
 Both of these commands not necessary anymore:
 # User gives siRNA sense and antisense sequences as inputs
 number_candidates, sense_list, antisense_list = userinput_collectsequences()
@@ -48,7 +56,7 @@ score20, weight20 = param20(sense_list, number_candidates)
     
 weight_structure_scores = 2
 
-chromedriver_path = r'C:\Users\User\Downloads\chromedriver_win32 (4)\chromedriver.exe'
+chromedriver_path = r'C:\Users\User\Downloads\new_chromedriver_win32\chromedriver.exe'
 
 # retrieve DNA sequence that was initially given as user input
 DNA_sequence = readDNAsequence()
@@ -85,6 +93,10 @@ for i in range(len(structure_scores_MFE)):
 # Calculating total score:
 
 sums_list, max_score = totalscores(number_candidates, score4, weight4, score6, weight6, score7, weight7, score8, weight8, score9, weight9, score10, weight10, score12, weight12, score13, weight13, score14, weight14, score15, weight15, score16, weight16, score17, weight17, score18, weight18, score19, weight19, score20, weight20, structure_scores, weight_structure_scores)
+
+"""
+TODO: SAVE THE SCORE PER PARAMETER AND TOTAL SCORE FOR EACH PARAMETER IN AN EXCEL
+"""
 
 # Calculating percentage the siRNAs obtained of total possible points:
     
