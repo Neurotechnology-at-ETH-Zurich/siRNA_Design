@@ -15,11 +15,10 @@ from Oligowalk import perform_query_oligowalk, count_results_oligowalk, collect_
 from Eurofins_siMax import perform_query_eurofins, count_results_eurofins, collect_target_positions_eurofins
 from sFold import perform_query_sFold, thresh_results, all_sequences
 
-# Still to complete:
-from IDT import perform_query_IDT, count_results_IDT
+# Omitted:
+# IDT (different design, 25nt Custom Dicer substrates)
+# RNAi explorer from genelink (page is faulty, cannot retrieve results)
 
-# Missing: 
-# RNAi explorer (genelink) => page faulty at the moment
 
 """
 About the input sequence we give:
