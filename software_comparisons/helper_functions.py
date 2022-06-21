@@ -10,8 +10,9 @@ import os
 import pandas as pd
 import xlrd
 import collections
-from openpyxl import Workbook
+from openpyxl import Workbook, load_workbook
 from openpyxl.utils.cell import coordinate_from_string, column_index_from_string
+from termcolor import colored
 
 # COLLECTING USER INPUT ON GENE OF INTEREST
 def collect_input():
@@ -46,9 +47,11 @@ def generate_workbook(gene_name, mRNA_sequence, FASTA_sequence, filename="test.x
     
     return excel_workbook, sheet
     
-def load_workbook(file_path=r'C:\Users\User\Desktop\ETH_NSC\Yanik_lab\Luciferase_siRNA\Test_CodePipeline\test.xlsx'):
-    excel_workbook = openpyxl.load_workbook(file_path, data_only=True)
-    return excel_workbook
+def read_workbook(file_path=r'C:\Users\User\Desktop\ETH_NSC\Yanik_lab\siRNADesign-master\software_comparisons\test.xlsx'):
+    excel_workbook = load_workbook(file_path, data_only=True)
+    sheet = excel_workbook.active
+    
+    return excel_workbook, sheet
 
 """
 def save_workbook(excel_workbook,filename='test.xlsx'):
@@ -122,6 +125,35 @@ def multiple_recommended(filename, workbook, sheet):
     triplicate_list = [item for item, count in collections.Counter(allstartpositions).items() if count > 2]
     
     return duplicate_list, triplicate_list
+
+# HIGHLIGHT SEQUENCES TARGETED 3 TIMES
+
+def colour_targets(sequence,sense_list):
+        
+    # remove TT overhangs
+    list_noTT = []
+    for sense in sense_list:
+        list_noTT.append(sense[:-2])
+           
+    # convert uracils to thymines, to match the NT sequence (despite input being mRNA, ncbi still denotes with Ts)
+    list_U2T = []
+    for sense in list_noTT:
+        sense_T = sense.replace('U','T')
+        list_U2T.append(sense_T)
+        
+    # create copy of sequence in which we will highlight homologous regions
+    colour_sequence = sequence
+    
+    # locate each match within the sequence, format it to be green and bold
+    for i in range(len(list_U2T)):
+        sense = list_U2T[i]
+        print(colored(sense,'green', attrs=['bold']))
+        colour_sequence = colour_sequence.replace(sense,colored(sense,'green',attrs=['bold']))
+    
+    return colour_sequence
+       
+
+
     
 """
 # FIND DUPLICATE EXCEL ENTRIES

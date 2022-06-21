@@ -78,7 +78,7 @@ driver.close()
 print("siDirect center analysis")
 # Perform query on siDirect website
 driver = perform_query_sidirect(chromedriver_path, gene_name, NT_sequence)
-time.sleep(5)
+time.sleep(10)
 # Count number of results
 driver, rownumber_sidirect, resultscount_sidirect = count_results_sidirect(driver)
 # Collect the target positions suggested by the software
@@ -134,7 +134,6 @@ driver.close()
 # 6: OLIGOWALK
 print("Oligowalk analysis")
 
-
 # Check whether sequence is over 10k nucleotides
 if len(NT_sequence) < 10000:
     print("Sequence length ok for Oligowalk analysis")
@@ -142,7 +141,7 @@ if len(NT_sequence) < 10000:
     # Perform query on Oligowalk website
     driver = perform_query_oligowalk(chromedriver_path, gene_name, NT_sequence, email)
     # Wait for email with results to be sent...then copy link to the siRNA candidates and paste when prompted to in the next function
-    # e.g. http://rna.urmc.rochester.edu/cgi-bin/server_exe/oligowalk/oligowalk_out.cgi?file=oligowalk950865362378867summary.htm
+    # e.g. http://rna.urmc.rochester.edu/cgi-bin/server_exe/oligowalk/oligowalk_out.cgi?file=oligowalk830183772211061summary.htm
     # Count number of results with probability of being efficient siRNA over 80%
     driver, rownumber_oligowalk, resultscount_oligowalk = count_results_oligowalk(chromedriver_path)
     # Collect target positions
@@ -166,14 +165,14 @@ else:
     driver = perform_query_oligowalk(chromedriver_path, gene_name_oligowalk, sequence_part1, email)
     driver, rownumber_oligowalk, resultscount_oligowalk = count_results_oligowalk(chromedriver_path)
     targetpositions_oligowalk = collect_target_positions_oligowalk(driver, resultscount_oligowalk)
-    # example link: http://rna.urmc.rochester.edu/cgi-bin/server_exe/oligowalk/oligowalk_out.cgi?file=oligowalk734117103348584summary.htm
+    # example link: http://rna.urmc.rochester.edu/cgi-bin/server_exe/oligowalk/oligowalk_out.cgi?file=oligowalk830183772211061summary.htm
     
     # Perform query for part 2
     gene_name_oligowalk = gene_name + 'pt2'
-    driver = perform_query_oligowalk(chromedriver_path, gene_name_oligowalk, sequence_part1, email)
-    driver, rownumber_oligowalk, resultscount_oligowalk = count_results_oligowalk(chromedriver_path)
-    targetpositions_oligowalk2 = collect_target_positions_oligowalk(driver, resultscount_oligowalk) 
-    # example link: http://rna.urmc.rochester.edu/cgi-bin/server_exe/oligowalk/oligowalk_out.cgi?file=oligowalk689344328668998summary.htm 
+    driver = perform_query_oligowalk(chromedriver_path, gene_name_oligowalk, sequence_part2, email)
+    driver, rownumber_oligowalk2, resultscount_oligowalk2 = count_results_oligowalk(chromedriver_path)
+    targetpositions_oligowalk2 = collect_target_positions_oligowalk(driver, resultscount_oligowalk2) 
+    # example link: http://rna.urmc.rochester.edu/cgi-bin/server_exe/oligowalk/oligowalk_out.cgi?file=oligowalk314162824376584summary.htm 
      
     # Combine the results into one list
     targetpositions_oligowalk.extend(targetpositions_oligowalk2)
@@ -223,20 +222,24 @@ else:
     # Retrieve results over 12 (need  to paste link received in email, e.g. http://sfold.wadsworth.org/output/1115053901.27294/)
     results_link, driver, targetpositions_sfold = thresh_results(chromedriver_path)
     # example link: https://sfold.wadsworth.org/output/0526041153.10402/sirna.html
+    # Retrieve all possible sense and antisense sequences
+    sense_sequences, antisense_sequences, allstartpositions = all_sequences(results_link, chromedriver_path)
     
-    """
-    NEED TO FIX AND PUT BACK IN
-    # Perform query for part 2 ################################## FIX THIS!!!!!!!!! ###################
+    ###new
+    # Perform query for part 2
     gene_name_sFold = gene_name + 'pt2'
     # Perform query on sFold website
     perform_query_sFold(chromedriver_path, gene_name_sFold, sequence_part2, email)
-    # Retrieve results over 12 (need  to paste link received in email, e.g. http://sfold.wadsworth.org/output/1115053901.27294/)
+    # Retrieve results over 12 (need to paste link received in email, e.g.)
     results_link, driver, targetpositions_sfold2 = thresh_results(chromedriver_path)
-    # example link: ADD
+    # Retrieve all possible sense and antisense sequences
+    sense_sequences2, antisense_sequences2, allstartpositions2 = all_sequences(results_link, chromedriver_path)
     
     # Combine the results into one list
     targetpositions_sfold.extend(targetpositions_sfold2)
-    """
+    sense_sequences.extend(sense_sequences2)
+    antisense_sequences.extend(antisense_sequences2)
+    allstartpositions.extend(allstartpositions2)
     
     # Save target positions to disk
     pickle_positions("sFold_list", targetpositions_sfold)
@@ -244,13 +247,16 @@ else:
     titleposition_sfold, colrow_sfold = find_title_location(targetpositions_sfold, excel_workbook, sheet, cell_title='sFold_over12')
     # Add results to excel file
     sheet = add_results(targetpositions_sfold, excel_workbook, sheet, colrow_sfold)
-    driver.close()
-
-    # Collect data on all sense and antisense sequences for position 3 to 1635
-    sense_sequences, antisense_sequences, allstartpositions = all_sequences(results_link, chromedriver_path)
+    
+    # store list of all possible positions
     pickle_positions("sense_list", sense_sequences)
     pickle_positions("antisense_list", antisense_sequences)
     pickle_positions("allstartpositions", allstartpositions)
+    
+    
+    driver.close()
+
+
 
 """
 # 8. IDT: UNFINISHED
@@ -280,4 +286,6 @@ for i in range(len(triplicate_list)):
     
 pickle_positions("triplicate sense sequences", triplicate_sense_sequences)
 pickle_positions("triplicate antisense sequences", triplicate_antisense_sequences)
+
+# 
 
