@@ -165,15 +165,15 @@ else:
     driver = perform_query_oligowalk(chromedriver_path, gene_name_oligowalk, sequence_part1, email)
     driver, rownumber_oligowalk, resultscount_oligowalk = count_results_oligowalk(chromedriver_path)
     targetpositions_oligowalk = collect_target_positions_oligowalk(driver, resultscount_oligowalk)
-    # example link: http://rna.urmc.rochester.edu/cgi-bin/server_exe/oligowalk/oligowalk_out.cgi?file=oligowalk830183772211061summary.htm
-    
+    # http://rna.urmc.rochester.edu/cgi-bin/server_exe/oligowalk/oligowalk_out.cgi?file=oligowalk447748647377924summary.htm
+
     # Perform query for part 2
     gene_name_oligowalk = gene_name + 'pt2'
     driver = perform_query_oligowalk(chromedriver_path, gene_name_oligowalk, sequence_part2, email)
     driver, rownumber_oligowalk2, resultscount_oligowalk2 = count_results_oligowalk(chromedriver_path)
     targetpositions_oligowalk2 = collect_target_positions_oligowalk(driver, resultscount_oligowalk2) 
-    # example link: http://rna.urmc.rochester.edu/cgi-bin/server_exe/oligowalk/oligowalk_out.cgi?file=oligowalk314162824376584summary.htm 
-     
+    #adcy1 mouse: http://rna.urmc.rochester.edu/cgi-bin/server_exe/oligowalk/oligowalk_out.cgi?file=oligowalk22680717877029summary.htm
+
     # Combine the results into one list
     targetpositions_oligowalk.extend(targetpositions_oligowalk2)
     
@@ -219,21 +219,30 @@ else:
     gene_name_sFold = gene_name + 'pt1'
     # Perform query on sFold website
     perform_query_sFold(chromedriver_path, gene_name_sFold, sequence_part1, email)
-    # Retrieve results over 12 (need  to paste link received in email, e.g. http://sfold.wadsworth.org/output/1115053901.27294/)
+    # Retrieve results over 12 (need  to paste link received in email
+    # e.g. https://sfold.wadsworth.org/output/0528115435.23487/sirna.html
     results_link, driver, targetpositions_sfold = thresh_results(chromedriver_path)
-    # example link: https://sfold.wadsworth.org/output/0526041153.10402/sirna.html
     # Retrieve all possible sense and antisense sequences
     sense_sequences, antisense_sequences, allstartpositions = all_sequences(results_link, chromedriver_path)
+    
+    # store only first part for later (need to split up again for secondary structure prediction)
+    sense_sequences1 = sense_sequences.copy()
+    pickle_positions("sense_list_pt1",sense_sequences1)
     
     ###new
     # Perform query for part 2
     gene_name_sFold = gene_name + 'pt2'
     # Perform query on sFold website
     perform_query_sFold(chromedriver_path, gene_name_sFold, sequence_part2, email)
-    # Retrieve results over 12 (need to paste link received in email, e.g.)
+    # Retrieve results over 12 - need to paste link received in email
+    # e.g. https://sfold.wadsworth.org/output/0621032446.12305/sirna.html
     results_link, driver, targetpositions_sfold2 = thresh_results(chromedriver_path)
     # Retrieve all possible sense and antisense sequences
     sense_sequences2, antisense_sequences2, allstartpositions2 = all_sequences(results_link, chromedriver_path)
+    
+    # store only second part for later (need to split up again for secondary structure prediction)
+    pickle_positions("sense_list_pt2",sense_sequences2)
+    
     
     # Combine the results into one list
     targetpositions_sfold.extend(targetpositions_sfold2)
