@@ -165,7 +165,7 @@ else:
     driver = perform_query_oligowalk(chromedriver_path, gene_name_oligowalk, sequence_part1, email)
     driver, rownumber_oligowalk, resultscount_oligowalk = count_results_oligowalk(chromedriver_path)
     targetpositions_oligowalk = collect_target_positions_oligowalk(driver, resultscount_oligowalk)
-    # http://rna.urmc.rochester.edu/cgi-bin/server_exe/oligowalk/oligowalk_out.cgi?file=oligowalk447748647377924summary.htm
+    # adcy1 mouse: http://rna.urmc.rochester.edu/cgi-bin/server_exe/oligowalk/oligowalk_out.cgi?file=oligowalk447748647377924summary.htm
 
     # Perform query for part 2
     gene_name_oligowalk = gene_name + 'pt2'
@@ -225,6 +225,11 @@ else:
     # Retrieve all possible sense and antisense sequences
     sense_sequences, antisense_sequences, allstartpositions = all_sequences(results_link, chromedriver_path)
     
+    # last sense sequence of batch 1 = first sense sequence of batch 2 -> delete duplicate
+    sense_sequences = sense_sequences[:-1]
+    antisense_sequences = antisense_sequences[:-1]
+    allstartpositions = allstartpositions[:-1]
+
     # store only first part for later (need to split up again for secondary structure prediction)
     sense_sequences1 = sense_sequences.copy()
     pickle_positions("sense_list_pt1",sense_sequences1)
@@ -240,15 +245,31 @@ else:
     # Retrieve all possible sense and antisense sequences
     sense_sequences2, antisense_sequences2, allstartpositions2 = all_sequences(results_link, chromedriver_path)
     
+    # add offset to all start positions (e.g. in the case of mouse adcy1, 9840) 
+    # so that sequences of the second half are also matched to the correct position on mRNA
+    allstartpositions2_corrected = []
+    
+    for i in range(len(allstartpositions2)):
+        mrna_position = i + int(allstartpositions[-1]) + 1
+        allstartpositions2_corrected.append(mrna_position)
+
+    # add offset to target positions
+    # so that the sequences of the second have are also matched to the correct position on mRNA
+    targetpositions_sfold2_corrected = []
+    
+    for pos in targetpositions_sfold2:
+        mrna_position = int(pos) + int((allstartpositions[-1])) - 2
+        targetpositions_sfold2_corrected.append(mrna_position)
+    
     # store only second part for later (need to split up again for secondary structure prediction)
     pickle_positions("sense_list_pt2",sense_sequences2)
     
-    
     # Combine the results into one list
-    targetpositions_sfold.extend(targetpositions_sfold2)
+
+    targetpositions_sfold.extend(targetpositions_sfold2_corrected)    
     sense_sequences.extend(sense_sequences2)
     antisense_sequences.extend(antisense_sequences2)
-    allstartpositions.extend(allstartpositions2)
+    allstartpositions.extend(allstartpositions2_corrected)
     
     # Save target positions to disk
     pickle_positions("sFold_list", targetpositions_sfold)
@@ -262,19 +283,21 @@ else:
     pickle_positions("antisense_list", antisense_sequences)
     pickle_positions("allstartpositions", allstartpositions)
     
+    # if you want to check whether they are unique:
+    """
+    unique_sense_list = set(sense_sequences)
+    print(len(list(unique_sense_list)))
+    """
+    
+    """
+    checking which elements occur in duplicate
+     import collections
+     print([item for item, count in collections.Counter(allstartpositions).items() if count > 1])
+    """
     
     driver.close()
 
-
-
-"""
-# 8. IDT: UNFINISHED
-print("IDT analysis")
-# Perform query on IDT page
-driver = perform_query_IDT(chromedriver_path, FASTA_sequence)
-# Enumerate and retrieve results
-driver, pos_list = count_results_IDT(driver) ###?
-"""
+# COMPARING ACROSS SOFTWARES
 
 # CREATE A LIST OF THE DUPLICATES/THE TARGET POSITIONS WE WANT TO ANALYSE
 duplicate_list, triplicate_list = multiple_recommended(filename, excel_workbook, sheet)
