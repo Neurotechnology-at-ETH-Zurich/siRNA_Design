@@ -82,7 +82,7 @@ AC1_sheep_X1 = sequence2string('ATGGCGGGGGCGCCGCGCGGCCGAGGCGGCGGCGGAGGCGGAGGCGGC
 MOUSE vs. SHEEP X1 (long transcript)
 """
 
-list_matches_mouse_sheepX1 = LongestMatches(AC1_mouse, AC1_sheep_X1)
+list_matches_mouse_sheepX1 = LongestMatches(AC1_mouse, AC1_sheep_X1,'mouse_sheepX1_matches_adcy1')
 print("There is " + str(len(list_matches_mouse_sheepX1)) + " regions of homology >= 19nt in mouse & sheep X1 (long) ADCY1.")
 
 coloured_mouse_sheepX1 = colour_matches(AC1_mouse,list_matches_mouse_sheepX1)
@@ -92,7 +92,7 @@ coloured_sheepX1_mouse = colour_matches(AC1_human_TV1,list_matches_mouse_sheepX1
 HUMAN TV1 (long transcript) vs. SHEEP X1 (long transcript)
 """
 
-list_matches_humanTV1_sheepX1 = LongestMatches(AC1_human_TV1, AC1_sheep_X1)
+list_matches_humanTV1_sheepX1 = LongestMatches(AC1_human_TV1, AC1_sheep_X1,'humanTV1_sheepX1_matches_adcy1')
 print("There is " + str(len(list_matches_humanTV1_sheepX1)) + " regions of homology >= 19nt in human TV1 & sheep X1 (long) ADCY1.")
 
 coloured_sheepX1_humanTV1 = colour_matches(AC1_sheep_X1,list_matches_humanTV1_sheepX1)
@@ -101,7 +101,7 @@ coloured_humanTV1_sheepX1 = colour_matches(AC1_human_TV1,list_matches_humanTV1_s
 """
 MOUSE vs. human TV1 (long transcript)
 """
-list_matches_mouse_tv1 = LongestMatches(AC1_mouse, AC1_human_TV1)
+list_matches_mouse_tv1 = LongestMatches(AC1_mouse, AC1_human_TV1,filename='mouse_humanTV1_matches_adcy1')
 print("There is " + str(len(list_matches_mouse_tv1)) + " regions of homology >= 19nt in mouse & human TV1 (long) ADCY1.")
 
 coloured_mouse_tv1 = colour_matches(AC1_mouse,list_matches_mouse_tv1)
@@ -110,7 +110,7 @@ coloured_tv1_mouse = colour_matches(AC1_human_TV1,list_matches_mouse_tv1)
 """
 RAT vs. MOUSE
 """
-list_matches_rat_mouse = LongestMatches(AC1_rat, AC1_mouse)
+list_matches_rat_mouse = LongestMatches(AC1_rat, AC1_mouse,'rat_mouse_matches_adcy1')
 print("There is " + str(len(list_matches_rat_mouse)) + " regions of homology >= 19nt in rat & mouse ADCY1.")
 
 coloured_mouse_rat = colour_matches(AC1_mouse,list_matches_rat_mouse)
@@ -119,7 +119,7 @@ coloured_rat_mouse = colour_matches(AC1_rat,list_matches_rat_mouse)
 """
 RAT vs. human TV1 (long transcript)
 """
-list_matches_rat_tv1 = LongestMatches(AC1_rat, AC1_human_TV1)
+list_matches_rat_tv1 = LongestMatches(AC1_rat, AC1_human_TV1,'rat_humanTV1_matches_adcy1')
 print("There is " + str(len(list_matches_rat_tv1)) + " regions of homology >= 19nt in rat & human TV1 (long) ADCY1.")
 
 coloured_rat_tv1 = colour_matches(AC1_rat,list_matches_rat_tv1)
@@ -128,7 +128,7 @@ coloured_tv1_rat = colour_matches(AC1_human_TV1,list_matches_rat_tv1)
 """
 RAT vs. human TV2 (short transcript)
 """
-list_matches_rat_tv2 = LongestMatches(AC1_rat, AC1_human_TV2)
+list_matches_rat_tv2 = LongestMatches(AC1_rat, AC1_human_TV2,'rat_humanTV2_matches_adcy1')
 print("There is " + str(len(list_matches_rat_tv2)) + " regions of homology >= 19nt in rat & human TV2 (short) ADCY1.")
 
 coloured_rat_tv2 = colour_matches(AC1_rat,list_matches_rat_tv2)
@@ -137,7 +137,7 @@ coloured_tv2_rat = colour_matches(AC1_human_TV2,list_matches_rat_tv2)
 """
 HUMAN TV1 vs. TV2
 """
-list_matches_tv1_tv2 = LongestMatches(AC1_human_TV1, AC1_human_TV2)
+list_matches_tv1_tv2 = LongestMatches(AC1_human_TV1, AC1_human_TV2,'humanTV1_humanTV2_matches_adcy1')
 print("There is " + str(len(list_matches_tv1_tv2)) + " regions of homology >= 19nt in human tv1 & tv2 ADCY1.")
 
 coloured_tv1_tv2 = colour_matches(AC1_human_TV1,list_matches_tv1_tv2)
