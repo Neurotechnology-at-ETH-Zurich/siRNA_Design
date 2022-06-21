@@ -151,6 +151,22 @@ def colour_targets(sequence,sense_list):
         colour_sequence = colour_sequence.replace(sense,colored(sense,'green',attrs=['bold']))
     
     return colour_sequence
+
+# RETRIEVE SENSE AND ANTISENSE SEQUENCES FOR ANY LIST OF POSITIONS
+
+def retrieve_sirnas(triplicate_list, sense_sequences, antisense_sequences, allstartpositions):
+    triplicate_sense_sequences = []
+    triplicate_antisense_sequences = []
+
+    for i in range(len(triplicate_list)):
+        position = triplicate_list[i]
+        index = allstartpositions.index(position)
+        sense = sense_sequences[index]
+        antisense = antisense_sequences[index]
+        triplicate_sense_sequences.append(sense)
+        triplicate_antisense_sequences.append(antisense)
+    
+    return triplicate_sense_sequences, triplicate_antisense_sequences
        
 
 

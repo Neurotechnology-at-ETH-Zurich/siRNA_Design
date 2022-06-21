@@ -6,7 +6,7 @@ Created on Tue Oct 19 17:29:29 2021
 """
 
 import time
-from helper_functions import collect_input, generate_workbook, load_workbook, find_title_location, add_results, pickle_positions, multiple_recommended
+from helper_functions import collect_input, generate_workbook, load_workbook, find_title_location, add_results, pickle_positions, multiple_recommended, colour_targets, retrieve_sirnas
 from sirna_wizard import perform_query_sirnawiz, count_results, collect_target_positions
 from Thermo_BLOCKIT import perform_query_blockit, count_results_blockit, collect_target_positions_blockit
 from siDESIGN_center import perform_query_sidesign, count_results_sidesign, collect_target_positions_sidesign
@@ -299,25 +299,23 @@ else:
 
 # COMPARING ACROSS SOFTWARES
 
-# CREATE A LIST OF THE DUPLICATES/THE TARGET POSITIONS WE WANT TO ANALYSE
+# CREATE A LIST OF THE DUPLICATES AND TRIPLICATES
 duplicate_list, triplicate_list = multiple_recommended(filename, excel_workbook, sheet)
 pickle_positions("duplicate positions", duplicate_list)
 pickle_positions("triplicate positions", triplicate_list)
 
-# RETRIEVE CORRESPONDING SENSE AND ANTISENSE FROM SFOLD
-triplicate_sense_sequences = []
-triplicate_antisense_sequences = []
+# RETRIEVE DUPLICATE SENSE AND ANTISENSE FROM SFOLD
+duplicate_sense_sequences, duplicate_antisense_sequences = retrieve_sirnas(duplicate_list, sense_sequences, antisense_sequences, allstartpositions)
 
-for i in range(len(triplicate_list)):
-    position = triplicate_list[i]
-    index = allstartpositions.index(position)
-    sense = sense_sequences[index]
-    antisense = antisense_sequences[index]
-    triplicate_sense_sequences.append(sense)
-    triplicate_antisense_sequences.append(antisense)
-    
+# RETRIEVE TRIPLICATE SENSE AND ANTISENSE FROM SFOLD
+triplicate_sense_sequences, triplicate_antisense_sequences = retrieve_sirnas(triplicate_list, sense_sequences, antisense_sequences, allstartpositions)
+
+# SAVE TRIPLICATE SIRNAS
 pickle_positions("triplicate sense sequences", triplicate_sense_sequences)
 pickle_positions("triplicate antisense sequences", triplicate_antisense_sequences)
 
-# 
+# HIGHLIGHT TRIPLICATE REGIONS ON NCBI SEQUENCE
+colour_sequence = colour_targets(NT_sequence, triplicate_sense_sequences)
+print(colour_sequence)
+
 
