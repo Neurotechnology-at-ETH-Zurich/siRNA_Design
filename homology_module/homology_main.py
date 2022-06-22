@@ -158,3 +158,5 @@ homology_output(coloured_mouse_tv1,coloured_tv1_mouse,coloured_mouse_rat,coloure
 ##########################################
 # COMPARING SIRNA HITS TO HOMOLOGOUS SITES
 ##########################################
+
+#sirna_homologous_check(NT_sequence,list_matches_mouse_tv1,duplicate_sense_sequences)

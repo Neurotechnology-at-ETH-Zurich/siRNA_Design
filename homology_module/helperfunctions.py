@@ -6,6 +6,7 @@ Created on Tue May 24 08:38:08 2022
 """
 
 from termcolor import colored
+import pickle
 
 # Function to convert an mRNA sequence as copied from ncbi (but line breaks removed in word by replacing ^p) into a letters-only string
 def sequence2string(inputstring): # input of type 'gtagggtacc'
@@ -41,7 +42,8 @@ def longest_common_sequence(s1, s2):
     return s1[x_longest - longest: x_longest]
 
 # Function that makes a list of all substrings of a specified length (default = 19)
-def LongestMatches(seq1,seq2,substring_length=19): # NEW!!
+# Pickles and saves matches list
+def LongestMatches(seq1,seq2,substring_length=19,filename='matches_list'): # NEW!!
     # Create a list to store the longest matching sequences
     list_matches = []
     # Find the longest match
@@ -68,6 +70,10 @@ def LongestMatches(seq1,seq2,substring_length=19): # NEW!!
             seq1_copy = seq1_copy.replace(match, " ")
         else:
             i = 1
+            
+    open_file = open(filename,"wb")
+    pickle.dump(list_matches,open_file)
+    open_file.close()
 
     return list_matches
 
@@ -133,15 +139,25 @@ def homology_output(coloured_mouse_tv1,coloured_tv1_mouse,coloured_mouse_rat,col
     else:
         print('species invalid - check your spelling or add new sequence manually!')
 
+def sirna_homologous_check(sequence,list_matches,sirna_list): # requires sense strand
 
+    # remove TT overhangs
+    list_noTT = []
+    for sense in sirna_list:
+        list_noTT.append(sense[:-2])
 
-def sirna_homologous_check(sequence,list_matches,sirna_list):
+    # convert uracils to thymines, to match the NT sequence (despite input being mRNA, ncbi still denotes with Ts)
+    list_U2T = []
+    for sense in list_noTT:
+        sense_T = sense.replace('U','T')
+        list_U2T.append(sense_T)
+
     for a in list_matches:
         matching_region = a
-        for b in sirna_list:
+        for b in list_U2T:
             sirna_candidate = b
             if sirna_candidate in matching_region:
                 print(sirna_candidate + " was found in the region " + matching_region)
-        
+
         
         
