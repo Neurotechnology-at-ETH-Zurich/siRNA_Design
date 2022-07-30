@@ -20,6 +20,8 @@ Collection of tools to retrieve siRNA (small interfering RNA) candidate sequence
   - [Using the NCBI Blast tool](#ncbi)
   - [Understanding BLAST output](#results)
   - [Evaluating BLAST results](#evaluate)
+- [Extra module: Homology search](#homology)
+- [Extra module: Which parameters really count?](#parameters_analysis)
 
 <a name="notes"></a>
 **General notes on usage**:
