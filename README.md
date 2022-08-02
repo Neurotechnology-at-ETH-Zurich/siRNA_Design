@@ -20,6 +20,8 @@ Collection of tools to retrieve siRNA (small interfering RNA) candidate sequence
   - [Using the NCBI Blast tool](#ncbi)
   - [Understanding BLAST output](#results)
   - [Evaluating BLAST results](#evaluate)
+- [Extra module: Homology search](#homology)
+- [Extra module: Which parameters really count?](#parameters_analysis)
 
 <a name="notes"></a>
 **General notes on usage**:
@@ -187,3 +189,13 @@ https://www.ccg.unam.mx/~vinuesa/tlem/pdfs/Bioinformatics_explained_BLAST.pdf
 Note: it might be worth it to check the precise locations of alignment along the siRNA input sequence. Although most siRNA design algorithms include BLAST to identify off-target transcripts until near-perfect complementarity, off-targeting primarily occurs when the seed region (nt 2-8) pairs with sequences within 3'-untranslated regions of unintended mRNAs, which can induce translational repression.
 
 Also, you can check physiological location of top hit alignments (e.g. if you are targeting the brain in a way that mostly avoids your siRNA cargo being delivered to other organs, and the off-target hits are not expressed in the brain, they might not be so relevant and can potentially be neglected.
+
+<a name="homology"></a>
+### Extra module: Homology search
+
+You might want to check whether it is possible to design 1 sequence that works in several species. For example, we might be testing an siRNA sequence in human cells, but plan in vivo experiments in mice and rats. The ideal scenario would be to design 1 siRNA to target a region that is homologous in humans and mice, or in mice and rats. Another possible scenario is that there is several transcript variants of our target, and we want to make sure that the region our siRNA is complementary to is present in all transcripts. The code contained in the homology module collects the transcripts you want to compare, checks how many homologous regions there is between them that are above 19nt long - this parameter can be adjusted - and also visually displays where they are. Finally, it also allows you to check which of your sirna candidates targets one of these homologous regions. 
+
+The file rat_transcripts.py contains outdated transcripts of rat ADCY1, which had been reported in the past. The reason to go through these outdated sequences is that for ADCY1, we noticed that while the mouse and human transcript had similar lengths (~12k bp), the rat transcript on NCBI was significantly shorter (~3k bp). As we know that the resulting proteins of all three species are very similar, this difference was puzzling. There exists a shorter human transcript, which serves different physiological functions, so our hypothesis was that the official rat sequence was the equivalent to this, and the long form was currently not published. In the rat genome database (https://rgd.mcw.edu/rgdweb/report/gene/main.html?id=1309318) we can find mRNA sequences that had previously been reported, but then taken off NCBI. Here there were two transcripts, X2 and X4, that had similar lengths to the mouse and human form. Despite these sequences being taken off NCBI for unknown reasons, we wanted to explore whether they have high homology to the long human transcript.
+
+The file taqman_main.py checks whether the taqman probes we ordered for RT-qPCR experiments showed cross-reactivity, i.e. whether the taqman probes to check for presence and quantity of ADCY1 in human cells would also target mouse or rat ADCY1. 
+
