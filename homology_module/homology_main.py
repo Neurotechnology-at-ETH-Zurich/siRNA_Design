@@ -31,6 +31,7 @@ def select_sequences(first=True):
     elif sequence_name == "AC1_sheep_X2":
         sequence = AC1_sheep_X2
     elif sequence_name == "add new sequence":
+        sequence_name = input("What is the name of your new sequence? ")
         newsequence = input("Please copy paste the new mRNA sequence. Write T's instead of U's. ")
         # make sure any spaces, numbers, or special characters are removed
         sequence = sequence2string(newsequence)
