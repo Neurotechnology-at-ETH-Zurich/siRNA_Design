@@ -20,8 +20,15 @@ Collection of tools to retrieve siRNA (small interfering RNA) candidate sequence
   - [Using the NCBI Blast tool](#ncbi)
   - [Understanding BLAST output](#results)
   - [Evaluating BLAST results](#evaluate)
-- [Extra module: Homology search](#homology)
-- [Extra module: Which parameters really count?](#parameters_analysis)
+- [Homology search module](#homologymodule)
+  - [Pre-loaded sequences](#sequences)
+  - [Homology finder](#homology)
+  - [Taqman cross-reactivity](#taqman)
+  - [Comparing rat transcripts](#rat)
+- [siRNA dataset analysis](#parameters_analysis)
+  - [Which parameters can automatically be computed for large datasets?](#parameters_automatic)
+  - [What is our question?](#question)
+  
 
 <a name="notes"></a>
 **General notes on usage**:
@@ -190,21 +197,85 @@ Note: it might be worth it to check the precise locations of alignment along the
 
 Also, you can check physiological location of top hit alignments (e.g. if you are targeting the brain in a way that mostly avoids your siRNA cargo being delivered to other organs, and the off-target hits are not expressed in the brain, they might not be so relevant and can potentially be neglected.
 
-<a name="homology"></a>
-### Extra module: Homology search
+<a name="homologymodule"></a>
+### Homology search module
 
 You might want to check whether it is possible to design 1 sequence that works in several species. For example, we might be testing an siRNA sequence in human cells, but plan in vivo experiments in mice and rats. The ideal scenario would be to design 1 siRNA to target a region that is homologous in humans and mice, or in mice and rats. Another possible scenario is that there is several transcript variants of our target, and we want to make sure that the region our siRNA is complementary to is present in all transcripts. The code contained in the homology module collects the transcripts you want to compare, checks how many homologous regions there is between them that are above 19nt long - this parameter can be adjusted - and also visually displays where they are. Finally, it also allows you to check which of your sirna candidates targets one of these homologous regions. 
 
-The file taqman_main.py checks whether the taqman probes we ordered for RT-qPCR experiments showed cross-reactivity, i.e. whether the taqman probes to check for presence and quantity of ADCY1 in human cells would also target mouse or rat ADCY1. The script is made up out of 5 parts:
-- We pre-load some input sequences  for our gene of interest (ADCY1 mouse, rat, and human transcripts) so the user can easily select them. 
-- We now let the user select which of these sequences he wants to examine, and of course give an option to add a new sequence with its corresponding Taqman probe.
-- The third section is just a quality control check to make sure our indexing has been done right. As a checkpoint, we check that the motif targeted by 1 taqman probe in 2 different transcripts is identical.
-- We extract the motifs targeted by the Taqman probes.
-- We check whether the Taqman probe specific to one sequence also has a target in the other, and vice versa.
+<a name="sequences"></a>
+**Pre-loaded sequences**
 
-The file homology_main.py ...
+The file **sequences.py** contains some mRNA sequences that are then loaded into other scripts; at the moment, it contains AC1 mouse, rat, human TV1 & TV2, sheep X1 & X2 transcripts.
 
-The file rat_transcripts.py contains outdated transcripts of rat ADCY1, i.e. sequences that had been uploaded to NCBI, but subsequently removed. The reason to consider these outdated sequences is that for ADCY1, we noticed that while the mouse and human transcript had similar lengths (~12k bp), the rat transcript on NCBI was significantly shorter (~3k bp). As we know that the resulting proteins of all three species are very similar, this difference was puzzling. There exists a shorter human transcript, which serves different physiological functions, so our hypothesis was that the official rat sequence was the equivalent to this, and the long form was currently not published. In the [rat genome database](https://rgd.mcw.edu/rgdweb/homepage/) we can find [ADCY1 rat mRNA transcripts that had previously been reported](https://rgd.mcw.edu/rgdweb/report/gene/main.html?id=1309318), but then taken off NCBI. Here there were two transcripts, [X2](https://www.ncbi.nlm.nih.gov/nuccore/XM_008770320.2?report=genbank) and [X4](https://www.ncbi.nlm.nih.gov/nuccore/XM_008770321.2?report=genbank), that had similar lengths to the [mouse](https://www.thermofisher.com/taqman-gene-expression/product/Mm01187829_m1?CID=&ICID=&subtype=) and [human long form](https://www.ncbi.nlm.nih.gov/nuccore/NM_021116.2). Despite these sequences being taken off NCBI for unknown reasons, we wanted to explore whether they have high homology to the long human transcript.
+<a name="homology"></a>
+**Homology finder**
 
+The file **homology_main.py** is made up of two parts. The first allows you to select the transcripts you want to compare out of a few preprogrammed ones which are loaded from the sequences file, or allows you to enter new sequences. As the program will tell you, you must pay attention that the mRNA sequence you provide replaces U's with T's, as seems to be the convention on the NCBI nucleotide database. In the first part, the user selects the sequences it wants to compare to find matching regions. A few sequences are preloaded from sequences.py, but there is also the option to enter new sequences. The second part finds all matches >= 19nt, and prints both input sequences with the matching regions highlighted.
 
+<a name="taqman"></a>
+**Taqman cross-reactivity checker**
 
+For our experiments, we used Taqman assays by ThermoFisher to determine gene expression levels before and after knockdown via RT-qPCR. As a first step, we wanted to see whether any of the Taqman probes showed cross-reactivity, as this would have allowed us to perform assays on mouse, human, and/or rat cells using the same probes. The file **taqman_main.py** checks whether a Taqman probe targeting one sequence also has a target site in a different sequence. The script is made up out of 5 parts:
+1. We pre-load some input sequences from sequences.py, and give the details for the corresponding taqman probes. If the user wants to work with these transcripts, no further input is required.
+2.  We now let the user select which of these sequences he wants to examine, or add a new sequence with the details of its corresponding Taqman probe (assay location & amplicon length).
+3. The third section is just a quality control check to make sure our indexing has been done right. As a checkpoint, we check that the motif targeted by 1 taqman probe in 2 different transcripts is identical.
+5. We extract the motifs targeted by the Taqman probes.
+6. We check whether the Taqman probe specific to one sequence also has a target in the other, and vice versa.
+
+<a name="rat"></a>
+**Comparing rat transcripts**
+
+The file **rat_transcripts.py** contains outdated transcripts of rat ADCY1, i.e. sequences that had been uploaded to NCBI, but subsequently removed. The reason to consider these outdated sequences is that for ADCY1, we noticed that while the mouse and human transcript had similar lengths (~12k bp), the rat transcript on NCBI was significantly shorter (~3k bp). As we know that the resulting proteins of all three species are very similar, this difference was puzzling. There exists a shorter human transcript, which serves different physiological functions, so our hypothesis was that the official rat sequence was the equivalent to this, and the long form was currently not published. In the [rat genome database](https://rgd.mcw.edu/rgdweb/homepage/) we can find [ADCY1 rat mRNA transcripts that had previously been reported](https://rgd.mcw.edu/rgdweb/report/gene/main.html?id=1309318), but then taken off NCBI. Here there were two transcripts, [X2](https://www.ncbi.nlm.nih.gov/nuccore/XM_008770320.2?report=genbank) and [X4](https://www.ncbi.nlm.nih.gov/nuccore/XM_008770321.2?report=genbank), that had similar lengths to the [mouse](https://www.thermofisher.com/taqman-gene-expression/product/Mm01187829_m1?CID=&ICID=&subtype=) and [human long form](https://www.ncbi.nlm.nih.gov/nuccore/NM_021116.2). Despite these sequences being taken off NCBI for unknown reasons, we wanted to explore whether they have high homology to the long human transcript.
+
+<a name="parameters_analysis"></a>
+### siRNA dataset analysis: Which parameters really count?
+
+The parameters we use in our siRNA design pipeline for scoring candidates are based on [Fakhr et al. (2016)](https://www.nature.com/articles/cgt20164.pdf). We experimentally validated our pipeline by testing the 3 highest-scoring candidates (out of the pool of >4x recommended siRNAs) in two cell types in vitro, and indeed got very good results (>90% knockdown). However, this is a small sample size to draw strong conclusions from, and importantly, we don't know whether a lower-scoring candidate would have performed worse. We wanted to see whether our total score, as well as scores for individual parameters, differ significantly between siRNAs that have experimentally been shown to perform optimally or suboptimally. To test this, we explored four datasets. I will give a brief overview of the datasets, in the hope of facilitating further analyses.
+
+<a name="datasetA"></a>
+**Dataset A: [Huesken et al. 2005](https://www.nature.com/articles/nbt1118.pdf)**
+
+This data was generated by scientists at Novartis. In this paper, they randomly selected 3106 siRNAs and screened these in H1299 cells in duplicate, at a concentration of 50nM. Data from 2431 siRNAs passed quality control filters. This data was then divided randomly into a training set ([2182 sequences](http://biodev.cea.fr/DSIR/data/TrainAll2182.txt)
+) and test set ([249 sequences](
+http://biodev.cea.fr/DSIR/data/TestAll249.txt)) to test an artificial neural network to predict siRNA performance.
+
+Out of these 2431 sequences, 778 achieve 50-70% inhibition, 853 achieve 70-90%, and 369 achieve >90%.
+
+<a name="datasetB"></a>
+**Dataset B: [Ichihara et al. (2007)](https://academic.oup.com/nar/article/35/18/e123/2402822)**
+
+This dataset was collected by Ichihara et al. from previously published literature. It is a collection of sequences from 5 publications: [Reynolds et al. (2004)](https://www.nature.com/articles/nbt936), [Vickers et al. (2003)](https://pubmed.ncbi.nlm.nih.gov/12500975/), [Haborth et al. (2003)](https://pubmed.ncbi.nlm.nih.gov/12804036/), [Ui-Tei et al. (2004)](https://pubmed.ncbi.nlm.nih.gov/14769950/), and [Khvorova et al. (2003)](https://pubmed.ncbi.nlm.nih.gov/14567918/). 60% of the data is taken from Reynolds et al., 18% from Vickers, 11% from Haborth, 9% from Ui-Tei, and 2% from Khvorova.
+
+The entire dataset contains 419 sequences, of which 60 achieve 50-70% inhibition, 117 achieve 70-90%, and 96 achieve >90%.
+
+<a name="datasetC"></a>
+**Dataset C: Subset of dataset B, [Mysara et al. (2012)](https://www.sciencedirect.com/science/article/pii/S1532046412000263)**
+
+Mysara et al. (2012) filtered dataset B and found 38 unique siRNAs that were not invovled in the training of any second generation tools (=machine learning tools to predict siRNA performance, such as [Biopredsi](https://www.nature.com/articles/nbt1118) or [DSIR](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3484153/)). These 38 records were used to create dataset C. While this dataset is not relevant to our analyses, I decided to include it as it might be useful for others.
+
+<a name="datasetD"></a>
+**Dataset D: Subset of [Fellman et al. (2011)](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3130540/)**
+
+Fellmann et al. chose nine genes, for which each possible shRNA was designed and experimentally tested, giving rise to a huge experimental dataset of 18 593 sequences. The ratio between active and inactive siRNAs is ~1:77. To overcome the data being skewed to negative results, Mysara et al. isolated the 238 positive incidences, and randomly selected 238 sequences from the remaining negative data, giving rise to a dataset of size 476. What is important to note is that Mysara et al. give the 19nt antisense strand with its corresponding inhibition value, which makes it look like the original paper tested conventional 19nt+2nt overhang siRNAs. While shRNA is the precursor to siRNA, the experimental results are not 100% comparable. Fellmann explicitely states that "siRNA algorithms are poor at predicting potent shRNAs", and that their findings "illustrate that the multistep process of mRNA biogenesis introduces additional structural constraints, providing an explanation for why siRNA-based algorithms often fail to predict functional shRNAs". Designing a successful shRNA seems to be dependent on more parameters than optimality of the 19nt antisense sequence. However it seems reasonable to draw conclusions in the other direction - the antisense sequence contained in a successful shRNA is likely to also be successful on its own. I would think this is the assumption Mysara et al. made, but did not state explicitely.
+
+The subset of the Fellmann dataset contains 476 sequences, of which 70 achieve 50-70% inhibition, 53 achieve 70-90%, and 127 achieve >90%.
+
+<a name="parameters_automatic"></a>
+**Which parameters can automatically be computed for large datasets?**
+
+Several parameters have not been automated yet, either due to the difficulty of doing so, or because it was not necessary for the input sequences we had used so far.
+
+Parameters 1-5 have not been automated (BLAST sense, BLAST antisense, not at SNP site, not in first 75 bases from start codon, not in the intron), and while parameter 11 (secondary structure at target site) has been automated in our pipeline, it is difficult to score for hundreds of sequences, as secondary structure prediction, for one, requires the mRNA sequence targeted by an siRNA (which is hard to find for all siRNAs in the datasets), and is also time-consuming.
+
+Parameter 12 (TT overhangs) was not scored for all siRNAs, as some datasets (B, D) only contain the 19nt complementary sequence, while dataset A does also contain overhangs.
+
+To summarise, the parameters we scored in our analyses were 6 (GC content), 7 (asymmetrical base pairing), 8 (energy valley), 9 (GC repeats), 10 (AT repeats), in some cases 12 (TT overhang) and 13-20, which check for the presence or absence of specific nucleotides at specific positions.
+
+<a name="question"></a>
+**Which questions did our analysis aim to answer?**
+
+We wanted to answer 2 questions:
+- Does our score actually say anything about whether an siRNA is good or bad when tested empirically?
+- Are all parameters actually important in differentiating between high- and low-efficiency siRNAs?
+
+To asnwer this, we extracted the lowest (<10% inhibition) and highest >(>90% inhibition)-efficacy siRNAs, and performed t-tests between these two groups for all individual parameters.
