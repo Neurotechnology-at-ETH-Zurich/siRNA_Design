@@ -201,14 +201,17 @@ You might want to check whether it is possible to design 1 sequence that works i
 
 <a name="sequences"></a>
 **Pre-loaded sequences**
+
 The file **sequences.py** contains some mRNA sequences that are then loaded into other scripts; at the moment, it contains AC1 mouse, rat, human TV1 & TV2, sheep X1 & X2 transcripts.
 
 <a name="homology"></a>
 **Homology finder**
+
 The file **homology_main.py** is made up of two parts. The first allows you to select the transcripts you want to compare out of a few preprogrammed ones which are loaded from the sequences file, or allows you to enter new sequences. As the program will tell you, you must pay attention that the mRNA sequence you provide replaces U's with T's, as seems to be the convention on the NCBI nucleotide database. In the first part, the user selects the sequences it wants to compare to find matching regions. A few sequences are preloaded from sequences.py, but there is also the option to enter new sequences. The second part finds all matches >= 19nt, and prints both input sequences with the matching regions highlighted.
 
 <a name="taqman"></a>
 **Taqman cross-reactivity checker**
+
 For our experiments, we used Taqman assays by ThermoFisher to determine gene expression levels before and after knockdown via RT-qPCR. As a first step, we wanted to see whether any of the Taqman probes showed cross-reactivity, as this would have allowed us to perform assays on mouse, human, and/or rat cells using the same probes. The file **taqman_main.py** checks whether a Taqman probe targeting one sequence also has a target site in a different sequence. The script is made up out of 5 parts:
 1. We pre-load some input sequences from sequences.py, and give the details for the corresponding taqman probes. If the user wants to work with these transcripts, no further input is required.
 2.  We now let the user select which of these sequences he wants to examine, or add a new sequence with the details of its corresponding Taqman probe (assay location & amplicon length).
@@ -218,6 +221,7 @@ For our experiments, we used Taqman assays by ThermoFisher to determine gene exp
 
 <a name="rat"></a>
 **Comparing rat transcripts**
+
 The file **rat_transcripts.py** contains outdated transcripts of rat ADCY1, i.e. sequences that had been uploaded to NCBI, but subsequently removed. The reason to consider these outdated sequences is that for ADCY1, we noticed that while the mouse and human transcript had similar lengths (~12k bp), the rat transcript on NCBI was significantly shorter (~3k bp). As we know that the resulting proteins of all three species are very similar, this difference was puzzling. There exists a shorter human transcript, which serves different physiological functions, so our hypothesis was that the official rat sequence was the equivalent to this, and the long form was currently not published. In the [rat genome database](https://rgd.mcw.edu/rgdweb/homepage/) we can find [ADCY1 rat mRNA transcripts that had previously been reported](https://rgd.mcw.edu/rgdweb/report/gene/main.html?id=1309318), but then taken off NCBI. Here there were two transcripts, [X2](https://www.ncbi.nlm.nih.gov/nuccore/XM_008770320.2?report=genbank) and [X4](https://www.ncbi.nlm.nih.gov/nuccore/XM_008770321.2?report=genbank), that had similar lengths to the [mouse](https://www.thermofisher.com/taqman-gene-expression/product/Mm01187829_m1?CID=&ICID=&subtype=) and [human long form](https://www.ncbi.nlm.nih.gov/nuccore/NM_021116.2). Despite these sequences being taken off NCBI for unknown reasons, we wanted to explore whether they have high homology to the long human transcript.
 
 <a name="parameters_analysis"></a>
