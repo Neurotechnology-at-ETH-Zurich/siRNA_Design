@@ -227,5 +227,25 @@ The file **rat_transcripts.py** contains outdated transcripts of rat ADCY1, i.e.
 <a name="parameters_analysis"></a>
 ### siRNA dataset analysis: Which parameters really count?
 
+The parameters we use in our siRNA design pipeline for scoring candidates are based on [Fakhr et al. (2016)](https://www.nature.com/articles/cgt20164.pdf). We experimentally validated our pipeline by testing the 3 highest-scoring candidates (out of the pool of >4x recommended siRNAs) in two cell types in vitro, and indeed got very good results (>90% knockdown). However, this is a small sample size to draw strong conclusions from, and importantly, we don't know whether a lower-scoring candidate would have performed worse. We wanted to see whether our total score, as well as scores for individual parameters, differ significantly between siRNAs that have experimentally been shown to perform optimally or suboptimally. To test this, we used three datasets. I will give a brief overview of the datasets, in the hope of facilitating further analyses.
 
+<a name="datasetA"></a>
+**Novartis dataset, [Huesken et al. 2005](https://www.nature.com/articles/nbt1118.pdf)**
+
+In this paper, they randomly selected 3106 siRNAs and screened these in H1299 cells in duplicate, at a concentration of 50nM. Data from 2431 siRNAs passed quality control filters. This data was then divided randomly into a training set ([2182 sequences](http://biodev.cea.fr/DSIR/data/TrainAll2182.txt)
+) and test set ([249 sequences](
+http://biodev.cea.fr/DSIR/data/TestAll249.txt)) to test an artificial neural network to predict siRNA performance.
+
+Out of these 2431 sequences, 778 achieve 50-70% inhibition, 853 achieve 70-90%, and 369 achieve >90%.
+
+
+
+
+<a name="datasetB"></a>
+**Dataset B: Reynolds, Vickers, Haborth, Ui-Tei, Khvorova**
+This dataset contains 419 sequences, of which 60 achieve 50-70% inhibition, 117 achieve 70-90%, and 96 achieve >90%.
+
+<a name="datasetD"></a>
+**Dataset D: Subset of Fellman et al.**
+This dataset contains 476 sequences, of which 70 achieve 50-70% inhibition, 53 achieve 70-90%, and 127 achieve >90%.
 
