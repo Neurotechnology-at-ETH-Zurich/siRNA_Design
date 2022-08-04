@@ -70,8 +70,7 @@ print(coloured_seq1_seq2)
 print(coloured_seq2_seq1)
 
 
-# e.g...
-list_matches_mouse_rat, coloured_mouse_rat, coloured_rat_mouse = compare_sequences(AC1_mouse, AC1_rat, "mouse", "rat")
+#list_matches_mouse_rat, coloured_mouse_rat, coloured_rat_mouse = compare_sequences(AC1_mouse, AC1_rat, "mouse", "rat")
 
 """
 outdated code:
