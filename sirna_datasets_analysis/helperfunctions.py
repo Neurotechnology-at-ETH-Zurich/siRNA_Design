@@ -321,19 +321,37 @@ def normalize_list(inputlist):
         
     return normalized_list
         
-def plot_bar_chart(lowest_sums, highest_sums):
+def plot_bar_chart(lowest_sums, highest_sums,title="Dataset X",ylabel="Parameter score"):
+    # get standard errors
     std_error_low = np.std(lowest_sums, ddof=1) / np.sqrt(len(lowest_sums))
     std_error_high = np.std(highest_sums, ddof=1) / np.sqrt(len(highest_sums))
     std_errors = [std_error_low,std_error_high]
+    
     # get averages
     avg_low = sum(lowest_sums)/len(lowest_sums)
     avg_high = sum(highest_sums)/len(highest_sums)
     averages = [avg_low,avg_high]
+    
+    # label bars
+    bars = ('Lowest', 'Highest')
+    x_pos = np.arange(len(bars))
+    
     #define chart 
     fig, ax = plt.subplots()
+    
     #create chart
     ax.bar(x=np.arange(len(averages)), #x-coordinates of bars
            height=averages, #height of bars
            yerr=std_errors, #error bar width
            capsize=4) #length of error bar caps
+    
+    # add y-axis title
+    plt.ylabel(ylabel)
+    
+    # Create names on the x axis
+    plt.xticks(x_pos, bars)
+    
+    # add chart title
+    plt.title(title)
+    
 

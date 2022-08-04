@@ -332,9 +332,10 @@ excel_workbook.save('sirna_datasets_results.xlsx')
 ### OPTIONAL: PLOT DATA
 
 # Dataset A
-plot_bar_chart(lowest_sums,highest_sums)
+plot_bar_chart(lowest_sums,highest_sums,title="Dataset A")
 # Dataset B
-plot_bar_chart(lowest_sums_B, highest_sums_B)
-
+plot_bar_chart(lowest_sums_B, highest_sums_B,title="Dataset B")
+# Dataset C
+plot_bar_chart(lowest_sums_C, highest_sums_C,title="Dataset C")
 # Dataset D
-plot_bar_chart(lowest_sums_D, highest_sums_D)
+plot_bar_chart(lowest_sums_D, highest_sums_D, title="Dataset D")
