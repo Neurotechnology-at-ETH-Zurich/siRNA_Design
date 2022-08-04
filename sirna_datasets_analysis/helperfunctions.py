@@ -234,7 +234,7 @@ def remove_overhangs(antisense_withoverhang):
 
 # count how many inhibition values are below 10 and above 90
 # if plot_hist is set to true, a histogram showing the distribution of inhibition values is shown
-def count_lower_higher(inhibition,plot_hist=True):
+def count_lower_higher(inhibition,bottom=10, middle=50, upper=90, plot_hist=True,decimal=False): # turn decimal True if inhibition = 0.1 instead of 10 etc.
         
     # create counting variables
 
@@ -257,22 +257,37 @@ def count_lower_higher(inhibition,plot_hist=True):
     for i in range(len(inhibition)):
     
         value = inhibition[i]
-    
-        if value < 10:
-            count_below10 = count_below10 + 1
-            indices_below10.append(i)
-        if value < 90:
-            count_below50 = count_below50 + 1 
-        if value > 90:
-            count_above90 = count_above90 + 1 
-            indices_above90.append(i)
-        if value > 50 and value < 80:
-            intermediate = intermediate + 1
-
-    print("There is " + str(count_below10) + " siRNAs achieving inhibition below 10.")
-    print("There is " + str(count_below50) + " siRNAs achieving inhibition below 50.")
-    print("There is " + str(count_above90) + " siRNAs achieving inhibition above 90.")
-    print("There is " + str(intermediate) + " siRNAs achieving inhibition between 50 and 80.")
+        
+        if decimal==False:
+        
+            if value < bottom:
+                count_below10 = count_below10 + 1
+                indices_below10.append(i)
+            if value < upper:
+                count_below50 = count_below50 + 1 
+            if value > upper:
+                count_above90 = count_above90 + 1 
+                indices_above90.append(i)
+            if value > middle and value < upper-10:
+                intermediate = intermediate + 1
+        
+        elif decimal==True:
+            
+            if value < (bottom/100):
+                count_below10 = count_below10 + 1
+                indices_below10.append(i)
+            if value < (upper/100):
+                count_below50 = count_below50 + 1 
+            if value > (upper/100):
+                count_above90 = count_above90 + 1 
+                indices_above90.append(i)
+            if value > (middle/100) and value < ((upper-10)/100):
+                intermediate = intermediate + 1
+            
+    print("There is " + str(count_below10) + " siRNAs achieving inhibition below " + str(bottom))
+    print("There is " + str(count_below50) + " siRNAs achieving inhibition below " + str(middle))
+    print("There is " + str(count_above90) + " siRNAs achieving inhibition above " + str(upper))
+    print("There is " + str(intermediate) + " siRNAs achieving inhibition between " + str(middle) + " and " + str(upper-10))
 
     if plot_hist == True:
         # Plot distribution of inhibition values
@@ -296,3 +311,12 @@ def collect_lower_higher(indices_below10, indices_above90, antisense_list):
         antisense_above90.append(antisense_list[index])
         
     return antisense_below10, antisense_above90
+
+def normalize_list(inputlist):
+    normalized_list = []
+    for element in inputlist:
+        xnorm = (element - min(inputlist))/(max(inputlist) - min(inputlist))
+        normalized_list.append(xnorm)
+        
+    return normalized_list
+        
