@@ -27,8 +27,7 @@ Collection of tools to retrieve siRNA (small interfering RNA) candidate sequence
   - [Comparing rat transcripts](#rat)
 - [siRNA dataset analysis](#parameters_analysis)
   - [Which parameters can automatically be computed for large datasets?](#parameters_automatic)
-  - [What is our question?](#question)
-  
+  - [What analyses did we perform on these datasets?](#analysis)
 
 <a name="notes"></a>
 **General notes on usage**:
@@ -241,6 +240,8 @@ http://biodev.cea.fr/DSIR/data/TestAll249.txt)) to test an artificial neural net
 
 Out of these 2431 sequences, 778 achieve 50-70% inhibition, 853 achieve 70-90%, and 369 achieve >90%.
 
+This dataset is loaded and preprocessed in the file **DatasetA_Huesken.py**. The script (1) preprocesses the data to have just antisense strands and the corresponding inhibition values, (2) plots the distribution of inhibition values, and also informs the user how many siRNAs have above and below 50% inhibition, (3) creates a variable that stores the antisense strands without their overhangs, (4) sorts the antisense strands by their inhibition values, (5) extracts the 200 highest- and lowest-efficacy siRNAs. These variables are then loaded into the main analysis script.
+
 <a name="datasetB"></a>
 **Dataset B: [Ichihara et al. (2007)](https://academic.oup.com/nar/article/35/18/e123/2402822)**
 
@@ -248,17 +249,23 @@ This dataset was collected by Ichihara et al. from previously published literatu
 
 The entire dataset contains 419 sequences, of which 60 achieve 50-70% inhibition, 117 achieve 70-90%, and 96 achieve >90%.
 
+This dataset is loaded and preprocessed in the file **DatasetB_Ichihara.py**. siRNAs with lower than 10% inhibition and those with higher than 90% inhibition are loaded into the main analysis script.
+
 <a name="datasetC"></a>
 **Dataset C: Subset of dataset B, [Mysara et al. (2012)](https://www.sciencedirect.com/science/article/pii/S1532046412000263)**
 
 Mysara et al. (2012) filtered dataset B and found 38 unique siRNAs that were not invovled in the training of any second generation tools (=machine learning tools to predict siRNA performance, such as [Biopredsi](https://www.nature.com/articles/nbt1118) or [DSIR](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3484153/)). These 38 records were used to create dataset C. While this dataset is not relevant to our analyses, I decided to include it as it might be useful for others.
 
+This dataset is loaded and preprocessed in the file **DatasetC_Mysara.py**.
+
 <a name="datasetD"></a>
-**Dataset D: Subset of [Fellman et al. (2011)](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3130540/)**
+**Dataset D: Subset of [Fellmann et al. (2011)](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3130540/)**
 
 Fellmann et al. chose nine genes, for which each possible shRNA was designed and experimentally tested, giving rise to a huge experimental dataset of 18 593 sequences. The ratio between active and inactive siRNAs is ~1:77. To overcome the data being skewed to negative results, Mysara et al. isolated the 238 positive incidences, and randomly selected 238 sequences from the remaining negative data, giving rise to a dataset of size 476. What is important to note is that Mysara et al. give the 19nt antisense strand with its corresponding inhibition value, which makes it look like the original paper tested conventional 19nt+2nt overhang siRNAs. While shRNA is the precursor to siRNA, the experimental results are not 100% comparable. Fellmann explicitely states that "siRNA algorithms are poor at predicting potent shRNAs", and that their findings "illustrate that the multistep process of mRNA biogenesis introduces additional structural constraints, providing an explanation for why siRNA-based algorithms often fail to predict functional shRNAs". Designing a successful shRNA seems to be dependent on more parameters than optimality of the 19nt antisense sequence. However it seems reasonable to draw conclusions in the other direction - the antisense sequence contained in a successful shRNA is likely to also be successful on its own. I would think this is the assumption Mysara et al. made, but did not state explicitely.
 
 The subset of the Fellmann dataset contains 476 sequences, of which 70 achieve 50-70% inhibition, 53 achieve 70-90%, and 127 achieve >90%.
+
+This dataset is loaded and preprocessed in the file **DatasetD_Fellmann.py**. siRNAs with lower than 10% inhibition and those with higher than 90% inhibition are loaded into the main analysis script.
 
 <a name="parameters_automatic"></a>
 **Which parameters can automatically be computed for large datasets?**
@@ -271,11 +278,16 @@ Parameter 12 (TT overhangs) was not scored for all siRNAs, as some datasets (B, 
 
 To summarise, the parameters we scored in our analyses were 6 (GC content), 7 (asymmetrical base pairing), 8 (energy valley), 9 (GC repeats), 10 (AT repeats), in some cases 12 (TT overhang) and 13-20, which check for the presence or absence of specific nucleotides at specific positions.
 
-<a name="question"></a>
-**Which questions did our analysis aim to answer?**
+<a name="analysis"></a>
+**What analyses did we perform on these datasets?**
 
 We wanted to answer 2 questions:
 - Does our score actually say anything about whether an siRNA is good or bad when tested empirically?
 - Are all parameters actually important in differentiating between high- and low-efficiency siRNAs?
 
-To asnwer this, we extracted the lowest (<10% inhibition) and highest >(>90% inhibition)-efficacy siRNAs, and performed t-tests between these two groups for all individual parameters.
+To answer this, we extracted the lowest (<10% inhibition) and highest >(>90% inhibition)-efficacy siRNAs in the respective dataset files (e.g. datasetB_Ichihara.py), and performed t-tests between these two groups for the parameters mentioned in the [above section](#parameters_automatic). The analysis is done in the **main.py** file of the sirna_datasets_analysis folder. First, a structured Excel file is generated to store the results, then, antisense strands for the dataset to be analysed are collected, and the complementary sense strands are generated. First, the low-efficiency siRNAs are analysed - for each siRNA, scores for each parameter, as well as their total score, are computed and stored. The same is done for the high-efficiency siRNAs. Then, t-tests between the two groups are performed - for each parameter, and for their total scores. The results are automatically added to the results file.
+
+
+
+
+
