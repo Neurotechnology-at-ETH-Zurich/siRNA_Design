@@ -53,7 +53,7 @@ The software tools included are:
 8. [SiRNA Design (IDT)](#idt)
 9. [Eurofins_siMax](#eurofins)
 
-These modules are called in the main.py file, which further relies on the helper_functions.py script.
+These modules are called in the `main.py` file of the folder, which relies on the `helper_functions.py` script.
 
 <a name="thermo"></a>
 1. ThermoFisher's BLOCK-iT RNAi Designer
@@ -127,6 +127,8 @@ What are the parameters, and what are their weights?
 18. Absence of G/C at 19th position of sense strand (1)
 19. Absence of G at 13th nucleotide of sense strand (1)
 20. Presence of U at 10th nucleotide of sense strand (1)
+
+The scoring of these parameters is implemented in the file `nt_analysis.py`, and called in `main.py` of the folder. Parameter 11, however, is implemented in `secondarystructure.py`.
 
 <a name="secondarystructure"></a>
 The file `secondarystructure.py` retrieves the input DNA sequence, inputs these to the [RNAfold server](http://rna.tbi.univie.ac.at/cgi-bin/RNAWebSuite/RNAfold.cgi), which converts it to the RNA sequence, and then scrapes both the **minimum free energy prediction** as well as the **centroid secondary structure** (=the structure with the minimum total base-pair distance to all structures in the thermodynamic ensemble) off the site, once they have been computed. To ensure robustness we score the secondary structure of both MFE and centroid predictions and then take the average, however some preliminary tests showed that for our sequences tested so far, the scores for the predictions of both models were identical.
@@ -204,17 +206,17 @@ You might want to check whether it is possible to design 1 sequence that works i
 <a name="sequences"></a>
 **Pre-loaded sequences**
 
-The file **sequences.py** contains some mRNA sequences that are then loaded into other scripts; at the moment, it contains AC1 mouse, rat, human TV1 & TV2, sheep X1 & X2 transcripts.
+The file `sequences.py` contains some mRNA sequences that are then loaded into other scripts; at the moment, it contains AC1 mouse, rat, human TV1 & TV2, sheep X1 & X2 transcripts.
 
 <a name="homology"></a>
 **Homology finder**
 
-The file **homology_main.py** is made up of two parts. The first allows you to select the transcripts you want to compare out of a few preprogrammed ones which are loaded from the sequences file, or allows you to enter new sequences. As the program will tell you, you must pay attention that the mRNA sequence you provide replaces U's with T's, as seems to be the convention on the NCBI nucleotide database. In the first part, the user selects the sequences it wants to compare to find matching regions. A few sequences are preloaded from sequences.py, but there is also the option to enter new sequences. The second part finds all matches >= 19nt, and prints both input sequences with the matching regions highlighted.
+The file `homology_main.py` is made up of two parts. The first allows you to select the transcripts you want to compare out of a few preprogrammed ones which are loaded from the sequences file, or allows you to enter new sequences. As the program will tell you, you must pay attention that the mRNA sequence you provide replaces U's with T's, as seems to be the convention on the NCBI nucleotide database. In the first part, the user selects the sequences it wants to compare to find matching regions. A few sequences are preloaded from `sequences.py`, but there is also the option to enter new sequences. The second part finds all matches >= 19nt, and prints both input sequences with the matching regions highlighted.
 
 <a name="taqman"></a>
 **Taqman cross-reactivity checker**
 
-For our experiments, we used Taqman assays by ThermoFisher to determine gene expression levels before and after knockdown via RT-qPCR. As a first step, we wanted to see whether any of the Taqman probes showed cross-reactivity, as this would have allowed us to perform assays on mouse, human, and/or rat cells using the same probes. The file **taqman_main.py** checks whether a Taqman probe targeting one sequence also has a target site in a different sequence. The script is made up out of 5 parts:
+For our experiments, we used Taqman assays by ThermoFisher to determine gene expression levels before and after knockdown via RT-qPCR. As a first step, we wanted to see whether any of the Taqman probes showed cross-reactivity, as this would have allowed us to perform assays on mouse, human, and/or rat cells using the same probes. The file `taqman_main.py` checks whether a Taqman probe targeting one sequence also has a target site in a different sequence. The script is made up out of 5 parts:
 1. We pre-load some input sequences from sequences.py, and give the details for the corresponding taqman probes. If the user wants to work with these transcripts, no further input is required.
 2.  We now let the user select which of these sequences he wants to examine, or add a new sequence with the details of its corresponding Taqman probe (assay location & amplicon length).
 3. The third section is just a quality control check to make sure our indexing has been done right. As a checkpoint, we check that the motif targeted by 1 taqman probe in 2 different transcripts is identical.
@@ -224,7 +226,7 @@ For our experiments, we used Taqman assays by ThermoFisher to determine gene exp
 <a name="rat"></a>
 **Comparing rat transcripts**
 
-The file **rat_transcripts.py** contains outdated transcripts of rat ADCY1, i.e. sequences that had been uploaded to NCBI, but subsequently removed. The reason to consider these outdated sequences is that for ADCY1, we noticed that while the mouse and human transcript had similar lengths (~12k bp), the rat transcript on NCBI was significantly shorter (~3k bp). As we know that the resulting proteins of all three species are very similar, this difference was puzzling. There exists a shorter human transcript, which serves different physiological functions, so our hypothesis was that the official rat sequence was the equivalent to this, and the long form was currently not published. In the [rat genome database](https://rgd.mcw.edu/rgdweb/homepage/) we can find [ADCY1 rat mRNA transcripts that had previously been reported](https://rgd.mcw.edu/rgdweb/report/gene/main.html?id=1309318), but then taken off NCBI. Here there were two transcripts, [X2](https://www.ncbi.nlm.nih.gov/nuccore/XM_008770320.2?report=genbank) and [X4](https://www.ncbi.nlm.nih.gov/nuccore/XM_008770321.2?report=genbank), that had similar lengths to the [mouse](https://www.thermofisher.com/taqman-gene-expression/product/Mm01187829_m1?CID=&ICID=&subtype=) and [human long form](https://www.ncbi.nlm.nih.gov/nuccore/NM_021116.2). Despite these sequences being taken off NCBI for unknown reasons, we wanted to explore whether they have high homology to the long human transcript.
+The file `rat_transcripts.py` contains outdated transcripts of rat ADCY1, i.e. sequences that had been uploaded to NCBI, but subsequently removed. The reason to consider these outdated sequences is that for ADCY1, we noticed that while the mouse and human transcript had similar lengths (~12k bp), the rat transcript on NCBI was significantly shorter (~3k bp). As we know that the resulting proteins of all three species are very similar, this difference was puzzling. There exists a shorter human transcript, which serves different physiological functions, so our hypothesis was that the official rat sequence was the equivalent to this, and the long form was currently not published. In the [rat genome database](https://rgd.mcw.edu/rgdweb/homepage/) we can find [ADCY1 rat mRNA transcripts that had previously been reported](https://rgd.mcw.edu/rgdweb/report/gene/main.html?id=1309318), but then taken off NCBI. There are two such transcripts, [X2](https://www.ncbi.nlm.nih.gov/nuccore/XM_008770320.2?report=genbank) and [X4](https://www.ncbi.nlm.nih.gov/nuccore/XM_008770321.2?report=genbank), that have similar lengths to the [mouse](https://www.thermofisher.com/taqman-gene-expression/product/Mm01187829_m1?CID=&ICID=&subtype=) and [human long form](https://www.ncbi.nlm.nih.gov/nuccore/NM_021116.2). Despite these sequences being taken off NCBI for unknown reasons, we wanted to explore whether they have high homology to the long human transcript.
 
 <a name="parameters_analysis"></a>
 ### siRNA dataset analysis: Which parameters really count?
@@ -240,7 +242,7 @@ http://biodev.cea.fr/DSIR/data/TestAll249.txt)) to test an artificial neural net
 
 Out of these 2431 sequences, 778 achieve 50-70% inhibition, 853 achieve 70-90%, and 369 achieve >90%.
 
-This dataset is loaded and preprocessed in the file **DatasetA_Huesken.py**. The script (1) preprocesses the data to have just antisense strands and the corresponding inhibition values, (2) plots the distribution of inhibition values, and also informs the user how many siRNAs have above and below 50% inhibition, (3) creates a variable that stores the antisense strands without their overhangs, (4) sorts the antisense strands by their inhibition values, (5) extracts the 200 highest- and lowest-efficacy siRNAs. These variables are then loaded into the main analysis script.
+This dataset is loaded and preprocessed in the file `DatasetA_Huesken.py`. The script (1) preprocesses the data to have just antisense strands and the corresponding inhibition values, (2) plots the distribution of inhibition values, and also informs the user how many siRNAs have above and below 50% inhibition, (3) creates a variable that stores the antisense strands without their overhangs, (4) sorts the antisense strands by their inhibition values, (5) extracts the 200 highest- and lowest-efficacy siRNAs. These variables are then loaded into the main analysis script.
 
 <a name="datasetB"></a>
 **Dataset B: [Ichihara et al. (2007)](https://academic.oup.com/nar/article/35/18/e123/2402822)**
@@ -249,14 +251,14 @@ This dataset was collected by Ichihara et al. from previously published literatu
 
 The entire dataset contains 419 sequences, of which 60 achieve 50-70% inhibition, 117 achieve 70-90%, and 96 achieve >90%.
 
-This dataset is loaded and preprocessed in the file **DatasetB_Ichihara.py**. siRNAs with lower than 10% inhibition and those with higher than 90% inhibition are loaded into the main analysis script.
+This dataset is loaded and preprocessed in the file `DatasetB_Ichihara.py`. siRNAs with lower than 10% inhibition and those with higher than 90% inhibition are loaded into the main analysis script.
 
 <a name="datasetC"></a>
 **Dataset C: Subset of dataset B, [Mysara et al. (2012)](https://www.sciencedirect.com/science/article/pii/S1532046412000263)**
 
 Mysara et al. (2012) filtered dataset B and found 38 unique siRNAs that were not invovled in the training of any second generation tools (=machine learning tools to predict siRNA performance, such as [Biopredsi](https://www.nature.com/articles/nbt1118) or [DSIR](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3484153/)). These 38 records were used to create dataset C. While this dataset is not relevant to our analyses, I decided to include it as it might be useful for others.
 
-This dataset is loaded and preprocessed in the file **DatasetC_Mysara.py**.
+This dataset is loaded and preprocessed in the file `DatasetC_Mysara.py`.
 
 <a name="datasetD"></a>
 **Dataset D: Subset of [Fellmann et al. (2011)](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3130540/)**
@@ -265,7 +267,7 @@ Fellmann et al. chose nine genes, for which each possible shRNA was designed and
 
 The subset of the Fellmann dataset contains 476 sequences, of which 70 achieve 50-70% inhibition, 53 achieve 70-90%, and 127 achieve >90%.
 
-This dataset is loaded and preprocessed in the file **DatasetD_Fellmann.py**. siRNAs with lower than 10% inhibition and those with higher than 90% inhibition are loaded into the main analysis script.
+This dataset is loaded and preprocessed in the file `DatasetD_Fellmann.py`. siRNAs with lower than 10% inhibition and those with higher than 90% inhibition are loaded into the main analysis script.
 
 <a name="parameters_automatic"></a>
 **Which parameters can automatically be computed for large datasets?**
@@ -285,9 +287,5 @@ We wanted to answer 2 questions:
 - Does our score actually say anything about whether an siRNA is good or bad when tested empirically?
 - Are all parameters actually important in differentiating between high- and low-efficiency siRNAs?
 
-To answer this, we extracted the lowest (<10% inhibition) and highest >(>90% inhibition)-efficacy siRNAs in the respective dataset files (e.g. datasetB_Ichihara.py), and performed t-tests between these two groups for the parameters mentioned in the [above section](#parameters_automatic). The analysis is done in the **main.py** file of the sirna_datasets_analysis folder. First, a structured Excel file is generated to store the results, then, antisense strands for the dataset to be analysed are collected, and the complementary sense strands are generated. First, the low-efficiency siRNAs are analysed - for each siRNA, scores for each parameter, as well as their total score, are computed and stored. The same is done for the high-efficiency siRNAs. Then, t-tests between the two groups are performed - for each parameter, and for their total scores. The results are automatically added to the results file.
-
-
-
-
+To answer this, we extracted the lowest (<10% inhibition) and highest >(>90% inhibition)-efficacy siRNAs in the respective dataset files (e.g. datasetB_Ichihara.py), and performed t-tests between these two groups for the parameters mentioned in the [above section](#parameters_automatic). The analysis is done in the `main.py` file of the sirna_datasets_analysis folder. First, a structured Excel file is generated to store the results, then, antisense strands for the dataset to be analysed are collected, and the complementary sense strfands are generated. First, the low-efficiency siRNAs are analysed - for each siRNA, scores for each parameter, as well as their total score, are computed and stored. The same is done for the high-efficiency siRNAs. Then, t-tests between the two groups are performed - for each parameter, and for their total scores. The results are automatically added to the results file.
 
