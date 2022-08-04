@@ -4,8 +4,11 @@ Created on Mon Jul 11 13:02:05 2022
 
 @author: User
 """
+import numpy as np
+import matplotlib.pyplot as plt
 from scipy import stats
 from helperfunctions import excel_results, excel_addnewdataset, excel_addaverages, remove_overhangs, ttests_parameters
+from helperfunctions import plot_bar_chart
 from DatasetA_Huesken import lowest, highest, lowest_overhang, highest_overhang
 from DatasetB_Ichihara import antisense_below10_B_overhang, antisense_above90_B_overhang # get them with the overhang
 from DatasetC_Mysara import antisense_below10_C_overhang, antisense_above90_C_overhang #  get them with overhang
@@ -325,3 +328,13 @@ sheet = ttests_parameters(column_result, column_significance, pvalue, sheet, sco
 stats.ttest_ind(score6_lowest_D, score6_highest_D) # etc 
 
 excel_workbook.save('sirna_datasets_results.xlsx')
+
+### OPTIONAL: PLOT DATA
+
+# Dataset A
+plot_bar_chart(lowest_sums,highest_sums)
+# Dataset B
+plot_bar_chart(lowest_sums_B, highest_sums_B)
+
+# Dataset D
+plot_bar_chart(lowest_sums_D, highest_sums_D)
