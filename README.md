@@ -32,7 +32,7 @@ Collection of tools to retrieve siRNA (small interfering RNA) candidate sequence
 <a name="notes"></a>
 **General notes on usage**:
 - We are designing 21nt siRNA sequences (19nt + 2nt TT overhangs).
-- There are 2 requirements which the mRNA sequence you provide as input should satisfy; the need for these will become clear in step 2, where the individual scoring parameters are explained. (a) needs to begin at start codon to ensure proper scoring of parameter 4; (b) needs to exclude introns which allows us to skip parameter 5.
+- The selection of siRNAs against a gene of interests starts with a target mRNA sequence which begins at the start codon (=> necessary for parameter 4) and excludes introns (=> to satisfy parameter 4), and of which variants (splice, polymorphic, allelic) are known. (Pei & Tuschl 2006)[https://www.nature.com/articles/nmeth911]
 
 <a name="step1"></a>
 ### Step 1: Automate siRNA candidate discovery
