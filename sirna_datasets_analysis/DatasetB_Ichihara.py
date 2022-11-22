@@ -23,8 +23,30 @@ SS_dataset_B = remove_spaces(SS_dataset_B)
 inhibition = remove_spaces(inhibition)
 
 # count how many inhibition values are below 10 and above 90
-indices_below10, indices_above90 = count_lower_higher(inhibition, plot_hist=True)
+indices_below10, indices_above90 = count_lower_higher(inhibition, plot_hist=True, decimal=False)
 
 # store antisense strands with inhibition values below 10 and above 90
 antisense_below10_B_overhang, antisense_above90_B_overhang = collect_lower_higher(indices_below10, indices_above90, AS_dataset_B)
+
+# (4) sort the sequences by inhibition value 
+print("(4) Sorting sequences by inhibition value")   
+
+# first, have to create dictionaries
+
+# for full length sirnas
+ichihara_dict = dict(zip(AS_dataset_B, inhibition))
+ichihara_list = list(ichihara_dict.items())
+
+# sort by values
+sorted_values_ichihara = sorted(ichihara_dict.values()) # sorts the values
+sorted_dict_ichihara = {}
+
+for value in sorted_values_ichihara:
+    for key in ichihara_dict.keys():
+        if ichihara_dict[key] == value:
+            sorted_dict_ichihara[key] = ichihara_dict[key]
+            
+# get all sorted antisense strands (not just lowest and highest)
+all_datasetB = list(sorted_dict_ichihara.items())
+inhibition_datasetB = list(sorted_dict_ichihara.values())
 

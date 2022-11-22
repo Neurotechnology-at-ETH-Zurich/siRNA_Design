@@ -342,6 +342,29 @@ def param20(sense_list, number_candidates):
     
     return score20, weight20
 
+def retrieve_sirna_scores(sense_list, antisense_list):
+    number_candidates = len(antisense_list)
+    score6, weight6 = param6(sense_list, number_candidates)
+    score7, weight7 = param7(sense_list, number_candidates)
+    score8, weight8 = param8(sense_list, number_candidates)
+    score9, weight9 = param9(sense_list, antisense_list, number_candidates)
+    score10, weight10 = param10(sense_list, antisense_list, number_candidates)
+    score13, weight13 = param13(antisense_list, number_candidates)
+    score14, weight14 = param14(sense_list, number_candidates)
+    score15, weight15 = param15(antisense_list, number_candidates)
+    score16, weight16 = param16(sense_list, number_candidates)
+    score17, weight17 = param17(sense_list, number_candidates)
+    score18, weight18 = param18(sense_list, number_candidates)
+    score19, weight19 = param19(sense_list, number_candidates)
+    score20, weight20 = param20(sense_list, number_candidates)
+    
+    return score6, weight6, score7, weight7, score8, weight8, score9, weight9, score10, weight10, score13, weight13, score14, weight14, score15, weight15, score16, weight16, score17, weight17, score18, weight18, score19, weight19, score20, weight20, number_candidates
+
+def score_overhangs(antisense_withoverhang, number_candidates):
+    score12, weight12 = param12(antisense_withoverhang, number_candidates)
+    
+    return score12, weight12
+
 def totalscores(number_candidates, score6, score7, score8, score9, score10, score12, score13, score14, score15, score16, score17, score18, score19, score20, weight6, weight7, weight8, weight9, weight10, weight12, weight13, weight14, weight15, weight16, weight17, weight18, weight19, weight20):
 
     # Calculating max. possible score & final score for each siRNA candidate
@@ -365,28 +388,6 @@ def totalscores_no12(number_candidates, score6, score7, score8, score9, score10,
         max_possible = weight6 + weight7 + weight8 + weight9 + weight10 + weight13 + weight14 + weight15 + weight16 + weight17 + weight18 + weight19 + weight20
         
     return sums_list, max_possible
-
-def retrieve_sirna_scores(sense_list, antisense_list, number_candidates, ):
-    score6, weight6 = param6(sense_list, number_candidates)
-    score7, weight7 = param7(sense_list, number_candidates)
-    score8, weight8 = param8(sense_list, number_candidates)
-    score9, weight9 = param9(sense_list, antisense_list, number_candidates)
-    score10, weight10 = param10(sense_list, antisense_list, number_candidates)
-    score13, weight13 = param13(antisense_list, number_candidates)
-    score14, weight14 = param14(sense_list, number_candidates)
-    score15, weight15 = param15(antisense_list, number_candidates)
-    score16, weight16 = param16(sense_list, number_candidates)
-    score17, weight17 = param17(sense_list, number_candidates)
-    score18, weight18 = param18(sense_list, number_candidates)
-    score19, weight19 = param19(sense_list, number_candidates)
-    score20, weight20 = param20(sense_list, number_candidates)
-    
-    return score6, weight6, score7, weight7, score8, weight8, score9, weight9, score10, weight10, score13, weight13, score14, weight14, score15, weight15, score16, weight16, score17, weight17, score18, weight18, score19, weight19, score20, weight20
-
-def score_overhangs(antisense_withoverhang, number_candidates):
-    score12, weight12 = param12(antisense_withoverhang, number_candidates)
-    
-    return score12, weight12
 
 
 """

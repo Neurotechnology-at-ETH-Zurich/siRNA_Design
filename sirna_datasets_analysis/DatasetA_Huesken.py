@@ -19,7 +19,6 @@ https://www.sciencedirect.com/science/article/pii/S1532046412000263#s0075
 Huesken et al. 2006 is referred to as dataset A
 """
 
-
 import matplotlib.pyplot as plt
 from helperfunctions import count_lower_higher, collect_lower_higher
 
@@ -46,9 +45,11 @@ for i in range(len(data_hall)):
 print("(2) Getting an overview of the data")
 
 print("Efficacies range between " + str(min(efficacies)) + " and " + str(max(efficacies)))
-plt.hist(efficacies)
-    
-# consider normalising efficacies between 0 and 1...
+plt.hist(efficacies,color='black')
+plt.xlabel('Normalised silencing efficacy')
+plt.ylabel('Frequency')
+
+# consider normalising efficacies between 0 and 1...?
 count_below50 = 0
 for value in efficacies:
     if value < 0.5:
@@ -62,7 +63,6 @@ for value in efficacies:
         count_above50 = count_above50 + 1 
 
 print("There is " + str(count_above50) + " siRNAs above 0.5.")
-
 
 # (3) remove overhangs - our pipeline assumes only TT overhangs, while their dataset does not
 print("(3) Creating variables without overhangs")
@@ -132,7 +132,7 @@ for value in sorted_values_overhang:
 lowest_overhang = list(sorted_dict_overhang.items())[0:200]
 highest_overhang = list(sorted_dict_overhang.items())[-200:]
 
-############ new
+############ new 04082022
 print("OPTIONAL (6) Retrieve all sorted antisense strands")
 
 # get all sorted antisense strands (not just lowest and highest)

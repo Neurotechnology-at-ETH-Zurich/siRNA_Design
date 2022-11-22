@@ -43,14 +43,14 @@ overhang_lowest = collect_antisense(lowest_overhang)
 overhang_highest = collect_antisense(highest_overhang)
 
 # store number of sequences in a variable (here, nr lowest=nr highest)
-number_candidates = len(antisense_lowest)
+# number_candidates = len(antisense_lowest)
 
 # LET'S HAVE A LOOK AT THE LOW-EFFICIENCY SIRNAS
 
 print("LOWER")
 
 # retrieve scores for low-efficiency sirnas
-score6_lowest, weight6, score7_lowest, weight7, score8_lowest, weight8, score9_lowest, weight9, score10_lowest, weight10, score13_lowest, weight13, score14_lowest, weight14, score15_lowest, weight15, score16_lowest, weight16, score17_lowest, weight17, score18_lowest, weight18, score19_lowest, weight19, score20_lowest, weight20  = retrieve_sirna_scores(sense_lowest, antisense_lowest, number_candidates)
+score6_lowest, weight6, score7_lowest, weight7, score8_lowest, weight8, score9_lowest, weight9, score10_lowest, weight10, score13_lowest, weight13, score14_lowest, weight14, score15_lowest, weight15, score16_lowest, weight16, score17_lowest, weight17, score18_lowest, weight18, score19_lowest, weight19, score20_lowest, weight20, number_candidates = retrieve_sirna_scores(sense_lowest, antisense_lowest)
 
 # score overhangs (TT)
 score12_lowest, weight12 = score_overhangs(overhang_lowest, number_candidates)
@@ -71,7 +71,7 @@ sheet.cell(17,column).value = sum(lowest_sums)/len(lowest_sums)
 print("HIGHER")
 
 # retrieve scores for high-efficiency sirnas
-score6_highest, weight6, score7_highest, weight7, score8_highest, weight8, score9_highest, weight9, score10_highest, weight10, score13_highest, weight13, score14_highest, weight14, score15_highest, weight15, score16_highest, weight16, score17_highest, weight17, score18_highest, weight18, score19_highest, weight19, score20_highest, weight20  = retrieve_sirna_scores(sense_highest, antisense_highest, number_candidates)
+score6_highest, weight6, score7_highest, weight7, score8_highest, weight8, score9_highest, weight9, score10_highest, weight10, score13_highest, weight13, score14_highest, weight14, score15_highest, weight15, score16_highest, weight16, score17_highest, weight17, score18_highest, weight18, score19_highest, weight19, score20_highest, weight20, number_candidates  = retrieve_sirna_scores(sense_highest, antisense_highest)
          
 # score overhangs (TT)
 score12_highest, weight12 = score_overhangs(overhang_highest, number_candidates)
@@ -123,7 +123,7 @@ print("LOWER")
 number_candidates_B = len(sense_below10_B)
 
 # retrieve scores for low-efficiency sirnas
-score6_lowest_B, weight6, score7_lowest_B, weight7, score8_lowest_B, weight8, score9_lowest_B, weight9, score10_lowest_B, weight10, score13_lowest_B, weight13, score14_lowest_B, weight14, score15_lowest_B, weight15, score16_lowest_B, weight16, score17_lowest_B, weight17, score18_lowest_B, weight18, score19_lowest_B, weight19, score20_lowest_B, weight20  = retrieve_sirna_scores(sense_below10_B, antisense_below10_B, number_candidates_B) 
+score6_lowest_B, weight6, score7_lowest_B, weight7, score8_lowest_B, weight8, score9_lowest_B, weight9, score10_lowest_B, weight10, score13_lowest_B, weight13, score14_lowest_B, weight14, score15_lowest_B, weight15, score16_lowest_B, weight16, score17_lowest_B, weight17, score18_lowest_B, weight18, score19_lowest_B, weight19, score20_lowest_B, weight20, number_candidates_B  = retrieve_sirna_scores(sense_below10_B, antisense_below10_B) 
 
 # score overhangs (TT)
 score12_lowest_B, weight12 = score_overhangs(antisense_below10_B_overhang, number_candidates_B)
@@ -145,7 +145,7 @@ print("HIGHER")
 number_candidates_B = len(sense_above90_B)
 
 # retrieve scores for high-efficiency sirnas
-score6_highest_B, weight6, score7_highest_B, weight7, score8_highest_B, weight8, score9_highest_B, weight9, score10_highest_B, weight10, score13_highest_B, weight13, score14_highest_B, weight14, score15_highest_B, weight15, score16_highest_B, weight16, score17_highest_B, weight17, score18_highest_B, weight18, score19_highest_B, weight19, score20_highest_B, weight20  = retrieve_sirna_scores(sense_above90_B, antisense_above90_B, number_candidates_B) 
+score6_highest_B, weight6, score7_highest_B, weight7, score8_highest_B, weight8, score9_highest_B, weight9, score10_highest_B, weight10, score13_highest_B, weight13, score14_highest_B, weight14, score15_highest_B, weight15, score16_highest_B, weight16, score17_highest_B, weight17, score18_highest_B, weight18, score19_highest_B, weight19, score20_highest_B, weight20, number_candidates_B  = retrieve_sirna_scores(sense_above90_B, antisense_above90_B) 
 
 # score overhangs (TT)
 score12_highest_B, weight12 = score_overhangs(antisense_above90_B_overhang, number_candidates_B)
@@ -173,88 +173,15 @@ column_significance = column_significance + 4
 pvalue = 0.05
 sheet = ttests_parameters(column_result, column_significance, pvalue, sheet, score6_lowest_B, score7_lowest_B, score8_lowest_B, score9_lowest_B, score10_lowest_B, score12_lowest_B, score13_lowest_B, score14_lowest_B, score15_lowest_B, score16_lowest_B, score17_lowest_B, score18_lowest_B, score19_lowest_B, score20_lowest_B, lowest_sums_B, score6_highest_B, score7_highest_B, score8_highest_B, score9_highest_B, score10_highest_B, score12_highest_B, score13_highest_B, score14_highest_B, score15_highest_B, score16_highest_B, score17_highest_B, score18_highest_B, score19_highest_B, score20_highest_B, highest_sums_B)
 
+excel_workbook.save('sirna_datasets_results.xlsx')
 ##################################################
-# ANALYSING MYSIRNA DATASET C. 19nt + 2nt nucleotide
+# ANALYSING MYSIRNA DATASET D - for us now C. 19nt, no overhang
 ##################################################
-print("Dataset C (Mysara et al.)")
+print("Dataset C (Fellman et al.)")
 
 # add name of dataset to excel to C1, as well as the required columns
 dataset3_column = dataset2_column + 4
-sheet.cell(1,dataset3_column).value = 'Dataset C (Mysara et al.)'
-# add subcolumns
-startpos = startpos + 4
-excel_workbook, sheet = excel_addnewdataset(startpos, excel_workbook, sheet, 'sirna_datasets_results.xlsx')
-
-antisense_below10_C = remove_overhangs(antisense_below10_C_overhang)
-antisense_above90_C = remove_overhangs(antisense_above90_C_overhang)
-
-sense_below10_C = reconstruct_sense(antisense_below10_C)
-sense_above90_C = reconstruct_sense(antisense_above90_C)
-
-print("LOWER")
-
-# store number of sequences in a variable
-number_candidates_C = len(sense_below10_C)
-
-# retrieve scores for low-efficiency sirnas
-score6_lowest_C, weight6, score7_lowest_C, weight7, score8_lowest_C, weight8, score9_lowest_C, weight9, score10_lowest_C, weight10, score13_lowest_C, weight13, score14_lowest_C, weight14, score15_lowest_C, weight15, score16_lowest_C, weight16, score17_lowest_C, weight17, score18_lowest_C, weight18, score19_lowest_C, weight19, score20_lowest_C, weight20  = retrieve_sirna_scores(sense_below10_C, antisense_below10_C, number_candidates_C) 
-
-# score overhangs (TT)
-score12_lowest_C, weight12 = score_overhangs(antisense_below10_C_overhang, number_candidates_C)
-
-# add average for each param to excel => column 11
-# e.g. avg of param 6 at (3,11), avg of param 7 at (4,11)
-column = 11
-excel_addaverages(column, excel_workbook, sheet, 'sirna_datasets_results.xlsx', score6_lowest_C, score7_lowest_C, score8_lowest_C, score9_lowest_C, score10_lowest_C, score12_lowest_C, score13_lowest_C, score14_lowest_C, score15_lowest_C, score16_lowest_C, score17_lowest_C, score18_lowest_C, score19_lowest_C, score20_lowest_C)
-
-# get sums for each sirna of this group
-lowest_sums_C, max_possible =  totalscores(number_candidates_C, score6_lowest_C, score7_lowest_C, score8_lowest_C, score9_lowest_C, score10_lowest_C, score12_lowest_C, score13_lowest_C, score14_lowest_C, score15_lowest_C, score16_lowest_C, score17_lowest_C, score18_lowest_C, score19_lowest_C, score20_lowest_C, weight6, weight7, weight8, weight9, weight10, weight12, weight13, weight14, weight15, weight16, weight17, weight18, weight19, weight20)
-
-# add average score of higher efficiency sirnas to excel
-sheet.cell(17,column).value = sum(lowest_sums)/len(lowest_sums) 
-
-print("HIGHER")
-
-# store number of sequences in a variable
-number_candidates_C = len(sense_above90_C)
-
-# retrieve scores for high-efficiency sirnas
-score6_highest_C, weight6, score7_highest_C, weight7, score8_highest_C, weight8, score9_highest_C, weight9, score10_highest_C, weight10, score13_highest_C, weight13, score14_highest_C, weight14, score15_highest_C, weight15, score16_highest_C, weight16, score17_highest_C, weight17, score18_highest_C, weight18, score19_highest_C, weight19, score20_highest_C, weight20  = retrieve_sirna_scores(sense_above90_C, antisense_above90_C, number_candidates_C) 
-
-# score overhangs (TT)
-score12_highest_C, weight12 = score_overhangs(antisense_above90_C_overhang, number_candidates_C)
-
-# add average for each param to excel => column 12
-# e.g. avg of param 6 at (3,12), avg of param 7 at (4,12)
-column = 12
-excel_addaverages(column, excel_workbook, sheet, 'sirna_datasets_results.xlsx', score6_highest_C, score7_highest_C, score8_highest_C, score9_highest_C, score10_highest_C, score12_highest_C, score13_highest_C, score14_highest_C, score15_highest_C, score16_highest_C, score17_highest_C, score18_highest_C, score19_highest_C, score20_highest_C)
-
-# get sums for each sirna of this group
-highest_sums_C, max_possible =  totalscores(number_candidates_C, score6_highest_C, score7_highest_C, score8_highest_C, score9_highest_C, score10_highest_C, score12_highest_C, score13_highest_C, score14_highest_C, score15_highest_C, score16_highest_C, score17_highest_C, score18_highest_C, score19_highest_C, score20_highest_C, weight6, weight7, weight8, weight9, weight10, weight12, weight13, weight14, weight15, weight16, weight17, weight18, weight19, weight20)
-
-# add average score of higher efficiency sirnas to excel
-sheet.cell(17,column).value = sum(highest_sums_C)/len(highest_sums_C)
-
-print("T-test between total scores of lower- and higher-efficiency sirnas (dataset D):")
-ttest_totalscores = stats.ttest_ind(lowest_sums_C, highest_sums_C)
-print(ttest_totalscores)
-
-# T-TESTS FOR INDIVIDUAL PARAMETERS:
-# i.e. compare scores of lower population & higher population for each parameter
-
-column_result = column_result + 4
-column_significance = column_significance + 4
-pvalue = 0.05
-sheet = ttests_parameters(column_result, column_significance, pvalue, sheet, score6_lowest_C, score7_lowest_C, score8_lowest_C, score9_lowest_C, score10_lowest_C, score12_lowest_C, score13_lowest_C, score14_lowest_C, score15_lowest_C, score16_lowest_C, score17_lowest_C, score18_lowest_C, score19_lowest_C, score20_lowest, lowest_sums_C, score6_highest_C, score7_highest_C, score8_highest_C, score9_highest_C, score10_highest_C, score12_highest_C, score13_highest_C, score14_highest_C, score15_highest_C, score16_highest_C, score17_highest_C, score18_highest_C, score19_highest_C, score20_highest_C, highest_sums_C)
-
-##################################################
-# ANALYSING MYSIRNA DATASET D. 19nt, no overhang
-##################################################
-print("Dataset D (Fellman et al.)")
-
-# add name of dataset to excel to C1, as well as the required columns
-dataset4_column = dataset3_column + 4
-sheet.cell(1,dataset4_column).value = 'Dataset D (Fellman et al.)'
+sheet.cell(1,dataset3_column).value = 'Dataset C (Fellman et al.)'
 # add subcolumns
 startpos = startpos + 4
 excel_workbook, sheet = excel_addnewdataset(startpos, excel_workbook, sheet, 'sirna_datasets_results.xlsx')
@@ -269,7 +196,7 @@ print("LOWER")
 number_candidates_D = len(sense_below10_D)
 
 # retrieve scores for low-efficiency sirnas
-score6_lowest_D, weight6, score7_lowest_D, weight7, score8_lowest_D, weight8, score9_lowest_D, weight9, score10_lowest_D, weight10, score13_lowest_D, weight13, score14_lowest_D, weight14, score15_lowest_D, weight15, score16_lowest_D, weight16, score17_lowest_D, weight17, score18_lowest_D, weight18, score19_lowest_D, weight19, score20_lowest_D, weight20  = retrieve_sirna_scores(sense_below10_D, antisense_below10_D, number_candidates_D) 
+score6_lowest_D, weight6, score7_lowest_D, weight7, score8_lowest_D, weight8, score9_lowest_D, weight9, score10_lowest_D, weight10, score13_lowest_D, weight13, score14_lowest_D, weight14, score15_lowest_D, weight15, score16_lowest_D, weight16, score17_lowest_D, weight17, score18_lowest_D, weight18, score19_lowest_D, weight19, score20_lowest_D, weight20, number_candidates_D  = retrieve_sirna_scores(sense_below10_D, antisense_below10_D) 
 
 # create placeholder variable for param12 (which we cant score here)
 score12_lower_placeholder_D = [0]*number_candidates_D
@@ -277,7 +204,7 @@ score12_lower_placeholder_D = [0]*number_candidates_D
 # add average for each param to excel => column 7
 # e.g. avg of param 6 at (3,11), avg of param 7 at (4,11)
 column = 15
-excel_addaverages(column, excel_workbook, sheet, 'sirna_datasets_results.xlsx', score6_lowest_D, score7_lowest_D, score8_lowest_C, score9_lowest_D, score10_lowest_D, score12_lower_placeholder_D, score13_lowest_D, score14_lowest_D, score15_lowest_D, score16_lowest_D, score17_lowest_D, score18_lowest_D, score19_lowest_D, score20_lowest_D)
+excel_addaverages(column, excel_workbook, sheet, 'sirna_datasets_results.xlsx', score6_lowest_D, score7_lowest_D, score8_lowest_D, score9_lowest_D, score10_lowest_D, score12_lower_placeholder_D, score13_lowest_D, score14_lowest_D, score15_lowest_D, score16_lowest_D, score17_lowest_D, score18_lowest_D, score19_lowest_D, score20_lowest_D)
 
 # get sums for each sirna of this group
 lowest_sums_D, max_possible =  totalscores_no12(number_candidates_D, score6_lowest_D, score7_lowest_D, score8_lowest_D, score9_lowest_D, score10_lowest_D, score13_lowest_D, score14_lowest_D, score15_lowest_D, score16_lowest_D, score17_lowest_D, score18_lowest_D, score19_lowest_D, score20_lowest_D, weight6, weight7, weight8, weight9, weight10, weight13, weight14, weight15, weight16, weight17, weight18, weight19, weight20)
@@ -293,7 +220,7 @@ print("HIGHER")
 number_candidates_D = len(sense_above90_D)
 
 # retrieve scores for high-efficiency sirnas
-score6_highest_D, weight6, score7_highest_D, weight7, score8_highest_D, weight8, score9_highest_D, weight9, score10_highest_D, weight10, score13_highest_D, weight13, score14_highest_D, weight14, score15_highest_D, weight15, score16_highest_D, weight16, score17_highest_D, weight17, score18_highest_D, weight18, score19_highest_D, weight19, score20_highest_D, weight20  = retrieve_sirna_scores(sense_above90_D, antisense_above90_D, number_candidates_D) 
+score6_highest_D, weight6, score7_highest_D, weight7, score8_highest_D, weight8, score9_highest_D, weight9, score10_highest_D, weight10, score13_highest_D, weight13, score14_highest_D, weight14, score15_highest_D, weight15, score16_highest_D, weight16, score17_highest_D, weight17, score18_highest_D, weight18, score19_highest_D, weight19, score20_highest_D, weight20, number_candidates_D  = retrieve_sirna_scores(sense_above90_D, antisense_above90_D) 
 
 # create placeholder variable for param12 (which we cant score here)
 score12_higher_placeholder_D = [0]*number_candidates_D
@@ -332,10 +259,10 @@ excel_workbook.save('sirna_datasets_results.xlsx')
 ### OPTIONAL: PLOT DATA
 
 # Dataset A
-plot_bar_chart(lowest_sums,highest_sums,title="Dataset A")
+plot_bar_chart(lowest_sums,highest_sums,title="Novartis dataset",color="black")
 # Dataset B
-plot_bar_chart(lowest_sums_B, highest_sums_B,title="Dataset B")
+plot_bar_chart(lowest_sums_B, highest_sums_B,title="Ichihara dataset",color="black")
 # Dataset C
-plot_bar_chart(lowest_sums_C, highest_sums_C,title="Dataset C")
+#plot_bar_chart(lowest_sums_C, highest_sums_C,title="Dataset C")
 # Dataset D
-plot_bar_chart(lowest_sums_D, highest_sums_D, title="Dataset D")
+plot_bar_chart(lowest_sums_D, highest_sums_D, title="Fellmann dataset",color="black")

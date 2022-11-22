@@ -5,9 +5,35 @@ Created on Mon Jul 18 09:49:46 2022
 @author: User
 """
 from scipy import stats
+from scipy.stats import pearsonr
 import numpy as np
 import matplotlib.pyplot as plt
 from openpyxl import Workbook
+
+
+def plot_correlation(inhibition,sums,title='Correlation plot',xlabel='% inhibition',ylabel='score'):
+    print(title)
+    
+    # plot sums (y-axis) over inhibition (x-axis)
+    plt.figure
+    plt.plot(inhibition,sums,color="black")
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    
+    # get Pearson's correlation coefficient
+    corr,_ = pearsonr(inhibition,sums)
+    print('Pearsons correlation: %.3f' % corr)
+    
+
+def add_to_excel(excel_workbook,sheet,title,column,data,filename='Huesken_Corr.xlsx'):
+    sheet[column + '1'] = title
+    
+    for i in range(len(data)):
+        cellname = column + str(i+2)
+        sheet[cellname] = data[i]
+    excel_workbook.save(filename)
+    
+    return excel_workbook, sheet
 
 ##################################################
 # CREATE AN EXCEL TO STORE RESULTS
@@ -207,6 +233,7 @@ def ttests_parameters(column_result, column_significance, pvalue, sheet, score6_
     else:
         sheet.cell(17,column_significance).value = 'n.s.'
     
+    
     return sheet
     
 
@@ -321,7 +348,7 @@ def normalize_list(inputlist):
         
     return normalized_list
         
-def plot_bar_chart(lowest_sums, highest_sums,title="Dataset X",ylabel="Parameter score"):
+def plot_bar_chart(lowest_sums, highest_sums,title="Dataset X",ylabel="Parameter score",color="black"):
     # get standard errors
     std_error_low = np.std(lowest_sums, ddof=1) / np.sqrt(len(lowest_sums))
     std_error_high = np.std(highest_sums, ddof=1) / np.sqrt(len(highest_sums))
@@ -343,7 +370,8 @@ def plot_bar_chart(lowest_sums, highest_sums,title="Dataset X",ylabel="Parameter
     ax.bar(x=np.arange(len(averages)), #x-coordinates of bars
            height=averages, #height of bars
            yerr=std_errors, #error bar width
-           capsize=4) #length of error bar caps
+           capsize=4, #length of error bar caps
+           color="black") 
     
     # add y-axis title
     plt.ylabel(ylabel)
