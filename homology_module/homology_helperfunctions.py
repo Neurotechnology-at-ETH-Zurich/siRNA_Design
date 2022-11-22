@@ -27,6 +27,9 @@ def sequence2string(inputstring): # input of type 'gtagggtacc'
     if mRNA_sequence.isalpha() == False:
         print("There is remaining numbers or characters in the mRNA input string. Fix this before proceeding.")
     
+    # Convert all to uppercase
+    mRNA_sequence = mRNA_sequence.upper()
+    
     return mRNA_sequence
 
 # Function to find the longest common element/substring between 2 strings
@@ -46,7 +49,7 @@ def longest_common_sequence(s1, s2):
 
 # Function that makes a list of all substrings of a specified length (default = 19)
 # Pickles and saves matches list
-def LongestMatches(seq1, seq2, filename='matches_list', substring_length = 19): # NEW!!
+def LongestMatches(seq1, seq2, filename='matches_list', substring_length=19): # NEW!!
     # Create a list to store the longest matching sequences
     list_matches = []
     # Find the longest match
@@ -68,6 +71,7 @@ def LongestMatches(seq1, seq2, filename='matches_list', substring_length = 19): 
         match = longest_common_sequence(seq1_copy,seq2)
         # check whether it is longer than 19 nucleotides
         if len(match) >= substring_length:
+            print(match)
             list_matches.append(match)
             print("found new match")
             seq1_copy = seq1_copy.replace(match, " ")
