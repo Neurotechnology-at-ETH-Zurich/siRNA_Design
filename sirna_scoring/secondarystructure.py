@@ -16,6 +16,13 @@ from nt_analysis import read_sequences
 
 sense_list, antisense_list, number_candidates = read_sequences()
 
+def T2U(sequence_Ts):
+    sequence_Us = sequence_Ts
+    sequence_Us = sequence_Us.replace('T','U')
+    
+    return sequence_Us
+
+
 def readDNAsequence():
     
     # we will need this for the RNAfold_extractdata function 
@@ -30,6 +37,8 @@ def readDNAsequence():
     return DNAsequence
 
 def perform_query_RNAfold(chromedriver_path, NT_sequence):
+    
+    success = True
     
     # automatically performs RNAfold query which returns the secondary structure of our target mRNA
     
@@ -46,12 +55,14 @@ def perform_query_RNAfold(chromedriver_path, NT_sequence):
     
     # wait for results to load
     try:
-        WebDriverWait(driver, 120).until(EC.presence_of_element_located((By.XPATH, '/html/body/div[2]/div[2]/div/div[3]/pre[1]/span/pre')))
+        WebDriverWait(driver, 3600).until(EC.presence_of_element_located((By.XPATH, '/html/body/div[2]/div[2]/div/div[3]/pre[1]/span/pre')))
+        # change back to 2000
     except:
         print("took too long to load")
+        success = False
         
-    return driver
-
+    return driver, success
+    
 def extracting_bases(driver,xpath_bases): #xpath for MFE='/html/body/div[2]/div[2]/div/div[3]/pre[1]/span/pre' // xpath for centroids='/html/body/div[2]/div[2]/div/div[3]/pre[3]/span/pre'
     # extract raw text from page (bases)
     bases_raw = driver.find_element_by_xpath(xpath_bases).text
@@ -94,19 +105,34 @@ def extracting_dotnotation(driver,xpath_dots): #xpath for MFE='/html/body/div[2]
     return dots   
 
 def findtargetpositions(sense_list, bases_MFE):
+    sirnas_unscored = []
+    sirnas_scored = []
     target_indices = []
     #as a next step we want to retrieve a sense sequence to evaluate it for accuracy
     for i in range(len(sense_list)):
         sense_seq_TT = sense_list[i]
-        sense_seq = sense_seq_TT[:-2]
-        print(sense_seq)
-        sense_index = bases_MFE.find(sense_seq) + 1
+        
+        if len(sense_seq_TT) > 19:
+            sense_seq = T2U(sense_seq_TT[:-2])
+            print(sense_seq)
+        else:
+            sense_seq = T2U(sense_seq_TT)
+            print(sense_seq)
+        
+        sense_index = bases_MFE.find(sense_seq) + 1 
+        
         print(sense_index)
         print("Sense number " + str(i) + " targets position " + str(sense_index) + " of the mRNA.")
+        
+        if sense_index == 0:
+            sirnas_unscored.append(sense_seq)
+        else:
+            sirnas_scored.append(sense_seq)
+        
         target_indices.append(sense_index)
         # note to self: double check that what this returns is correct!
 
-    return target_indices
+    return target_indices, sirnas_unscored, sirnas_scored
 
 def targetstructure_scoring(bases, dots, sense_list):
     
@@ -127,7 +153,14 @@ def targetstructure_scoring(bases, dots, sense_list):
         # variable containing sense sequence
         sense_TT = sense_list[i]
         sense = sense_TT[:-2]
-    
+        
+        # convert T2U:
+        sense = T2U(sense)
+        
+        print(sense)
+        
+        ####### CONT HERE!!! NEED TO CHECK WHETHER SENSE TARGETS BASES1 OR BASES2
+
         # retrieve position on mRNA
         targetpos = bases.index(sense) # note that the real position is targetpos+1, remember that python starts at 0!
         # retrieve pairing information (MFE)

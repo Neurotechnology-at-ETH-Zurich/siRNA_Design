@@ -4,14 +4,15 @@ Created on Thu Oct 28 19:12:51 2021
 
 @author: User
 """
+# import os
+import sys
+sys.path.append(r'C:\Users\User\Desktop\ETH_NSC\Yanik_lab\siRNADesign-master\software_comparisons')
 
-import os
 
-os.chdir("../")
+#os.chdir("../")
 
 import openpyxl
 import pickle
-from software_comparisons import helper_functions
 from helper_functions import open_pickle
 
 """
@@ -57,15 +58,23 @@ WHICH PARAMETERS WILL WE HERE ASSESS?
 
 def read_sequences():
     path = 'C:/Users/User/Desktop/ETH_NSC/Yanik_lab/siRNADesign-master/software_comparisons'
+    
     filename_s = '/triplicate sense sequences'
+    open_file_s = open(path+filename_s, "rb")   
+    sense_list = pickle.load(open_file_s) 
+    open_file_s.close()
+    
     filename_as = '/triplicate antisense sequences'
-    open_file_s = open(path+filename_s, "rb")
-    sense_list = pickle.load(open_file_s)
     open_file_as = open(path+filename_as, "rb")
     antisense_list = pickle.load(open_file_as)
-    
-    open_file_s.close()
     open_file_as.close()
+    
+    """
+    filename_seq = '/NT_sequence'
+    open_file_seq = open(path+filename_seq, "rb")
+    NT_sequence = pickle.load(open_file_seq)
+    open_file_seq.close()
+    """
     
     number_candidates = len(sense_list)
     
@@ -229,9 +238,9 @@ def param10(sense_list, antisense_list, number_candidates):
         antisense_strand = antisense_list[i]
         
         if 'AAAA' in sense_strand or 'AAAA' in antisense_strand:
-            print("fail")
+            print("failed because of polyA")
         elif 'TTTT' in antisense_strand or 'TTTT' in antisense_strand:
-            print("fail")
+            print("failed because of polyT")
         else:
             score10[i] = weight10
     
@@ -250,9 +259,9 @@ def param9(sense_list, antisense_list, number_candidates):
         antisense_strand = antisense_list[i]
         
         if 'GGG' in sense_strand or 'GGG' in antisense_strand:
-            print("failed param9")
+            print("failed because of polyG")
         elif 'CCC' in antisense_strand or 'CCC' in antisense_strand:
-            print("failed param9")
+            print("failed because of polyC")
         else:
             score9[i] = weight9
     
@@ -345,8 +354,31 @@ def param6(sense_list, number_candidates):
 
 # 4: not in first 75 bases from start codon
 
-def param4(number_candidates):
+#def param4(number_candidates):
+def param4(sense_list, DNA_sequence):
+    print(len(DNA_sequence))
+    
+    weight4 = 1
+    score4 = [0]*len(sense_list)
+    
+    for i in range(len(sense_list)):
+        sense = sense_list[i]
+        
+        if len(sense) > 19:
+            sense = sense[:-2]
+        
+        print(sense)
+        
+        startcodon = DNA_sequence.index("ATG")
+        
+        position = DNA_sequence.index(sense)
+        if int(position) > startcodon + 75:
+            score4[i] = 1
+    
     # for this we need to retrieve target position and check that it is a number < 76 (in python 0-75)
+    
+    """
+
     path = 'C:/Users/User/Desktop/ETH_NSC/Yanik_lab/Luciferase_siRNA/siRNADesign/siRNADesign/software_comparisons'
     filename = r'/triplicate positions'
     open_file = open(path+filename, 'rb')
@@ -361,6 +393,8 @@ def param4(number_candidates):
         position = triplicate_positions[i]
         if int(position) > 75:
             score4[i] = 1
+            
+    """
     
     return score4, weight4
     
@@ -392,7 +426,8 @@ def totalscores(number_candidates, score4, weight4, score6, weight6, score7, wei
 def percentages_score(sums_list, max_score):
     percentages_list = []
     for i in range(len(sums_list)):
-        percentages_list.append((sums_list[i]/max_score)*100)
+        percentage = (sums_list[i]/max_score)*100
+        percentages_list.append(round(percentage,2))
         
     return percentages_list
         
