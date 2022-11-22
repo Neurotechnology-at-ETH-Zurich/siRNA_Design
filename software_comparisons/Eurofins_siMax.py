@@ -27,7 +27,7 @@ def perform_query_eurofins(chromedriver_path, gene_name, NT_sequence):
     
     # Submit search
     driver.find_element_by_xpath('/html/body/form/div[5]/div[1]/div[4]/div/div/div/div/div[2]/div/div[2]/div/div/div[2]/div[8]/input[1]').click()
-    time.sleep(1)
+    time.sleep(5)
     driver.find_element_by_xpath('/html/body/form/div[5]/div[1]/div[4]/div/div/div/div/div[2]/div/div[2]/div/div/div[2]/div[8]/input[1]').click()    
     
     time.sleep(5)
@@ -36,8 +36,12 @@ def perform_query_eurofins(chromedriver_path, gene_name, NT_sequence):
 
 def count_results_eurofins(driver):
     
-    WebDriverWait(driver,250).until(EC.presence_of_element_located((By.XPATH, '/html/body/form/div[5]/div[1]/div[4]/div/div/div/div/div[2]/div/div[2]/div/div[1]/div[3]/fieldset/div[1]/table/tbody')))
+    WebDriverWait(driver,2000).until(EC.presence_of_element_located((By.XPATH, '/html/body/form/div[5]/div[1]/div[4]/div/div/div/div/div[2]/div/div[2]/div/div[1]/div[3]/fieldset/div[1]/table/tbody')))
+    #rows = driver.find_elements_by_xpath('/html/body/form/div[5]/div[1]/div[4]/div/div/div/div/div[2]/div/div[2]/div/div[1]/div[3]/fieldset/div[1]/table/tbody')
     rows = driver.find_elements_by_xpath('/html/body/form/div[5]/div[1]/div[4]/div/div/div/div/div[2]/div/div[2]/div/div[1]/div[3]/fieldset/div[1]/table/tbody')
+    
+    # first row: /html/body/form/div[5]/div[1]/div[4]/div/div/div/div/div[2]/div/div[2]/div/div[1]/div[3]/fieldset/div[1]/table/tbody[1]/tr/td[4]
+    # last row: /html/body/form/div[5]/div[1]/div[4]/div/div/div/div/div[2]/div/div[2]/div/div[1]/div[3]/fieldset/div[1]/table/tbody[8]/tr/td[4]
     
     return driver, rows
 

@@ -24,7 +24,7 @@ def collect_input():
 
 # GENERATING CORRECT FORMATTING OF EXCEL
 
-def generate_workbook(gene_name, mRNA_sequence, FASTA_sequence, filename="test.xlsx"):
+def generate_workbook(gene_name, mRNA_sequence, FASTA_sequence, filename):
     excel_workbook = Workbook()
     sheet = excel_workbook.active
 
@@ -48,6 +48,7 @@ def generate_workbook(gene_name, mRNA_sequence, FASTA_sequence, filename="test.x
     return excel_workbook, sheet
     
 def read_workbook(file_path=r'C:\Users\User\Desktop\ETH_NSC\Yanik_lab\siRNADesign-master\software_comparisons\test.xlsx'):
+    # file_path=r'C:\Users\User\Desktop\ETH_NSC\Yanik_lab\siRNADesign-master\software_comparisons\test.xlsx'
     excel_workbook = load_workbook(file_path, data_only=True)
     sheet = excel_workbook.active
     
@@ -92,7 +93,7 @@ def find_title_location(target_positions, excel_workbook, sheet, cell_title):
     return title_position, col_row
 
 # WRITE TARGET POSITION UNDER HEADER IN EXCEL        
-def add_results(target_positions, excel_workbook, sheet, col_row):
+def add_results(target_positions, excel_workbook, sheet, col_row,filename="test"):
     
     for i in range(len(target_positions)):
         new_row = col_row[1] + (i+1)
@@ -104,10 +105,10 @@ def add_results(target_positions, excel_workbook, sheet, col_row):
         
         sheet.cell(row=new_row, column=column_index_from_string(col_row[0])).value = target_positions[i]
         
-        excel_workbook.save('test.xlsx')
+        excel_workbook.save(filename + '.' + 'xlsx')
         
     return sheet
-
+    
 def multiple_recommended(filename, workbook, sheet):
     allstartpositions = []
     
@@ -118,13 +119,14 @@ def multiple_recommended(filename, workbook, sheet):
     # Remove all none  values
     allstartpositions = [i for i in allstartpositions if i]
     # Remove header info
-    allstartpositions = allstartpositions[13:] 
+    allstartpositions = allstartpositions[15:] 
     
     # Get duplicates
+    recommended_list = [item for item, count in collections.Counter(allstartpositions).items() if count > 1]
     duplicate_list = [item for item, count in collections.Counter(allstartpositions).items() if count > 1]
     triplicate_list = [item for item, count in collections.Counter(allstartpositions).items() if count > 2]
     
-    return duplicate_list, triplicate_list
+    return recommended_list, duplicate_list, triplicate_list
 
 # HIGHLIGHT SEQUENCES TARGETED 3 TIMES
 
@@ -159,8 +161,12 @@ def retrieve_sirnas(triplicate_list, sense_sequences, antisense_sequences, allst
     triplicate_antisense_sequences = []
 
     for i in range(len(triplicate_list)):
+        print("i")
+        print(i)
         position = triplicate_list[i]
-        index = allstartpositions.index(position)
+        print("position")
+        print(position)
+        index = allstartpositions.index(int(position))
         sense = sense_sequences[index]
         antisense = antisense_sequences[index]
         triplicate_sense_sequences.append(sense)

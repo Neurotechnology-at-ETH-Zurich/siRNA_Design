@@ -32,8 +32,9 @@ def perform_query_blockit(chromedriver_path, gene_name, NT_sequence):
 # RETRIEVE NUMBER OF ROWS IN OUTPUT TABLE
 def count_results_blockit(driver):
     
-    rows = driver.find_elements_by_xpath('/html/body/div[1]/div/div/div/div/div/form/table/tbody/tr[6]/td/table/tbody/tr')
-
+    rows = driver.find_elements_by_xpath('/html/body/div[8]/div/div/div/div/div/form/table/tbody/tr[6]/td/table/tbody/tr')
+    # row1: /html/body/div[8]/div/div/div/div/div/form/table/tbody/tr[6]/td/table/tbody/tr[2]/td[3]
+    # row2: /html/body/div[8]/div/div/div/div/div/form/table/tbody/tr[6]/td/table/tbody/tr[3]/td[3]
     rownumber = len(rows)
 
     results_count = rownumber - 1
@@ -50,7 +51,7 @@ def collect_target_positions_blockit(driver, results_count):
     positions_list = []
     
     for i in range(results_count):
-        position = driver.find_element_by_xpath(("/html/body/div[1]/div/div/div/div/div/form/table/tbody/tr[6]/td/table/tbody/tr[" + str(i+2) + "]/td[3]")).text
+        position = driver.find_element_by_xpath(("/html/body/div[8]/div/div/div/div/div/form/table/tbody/tr[6]/td/table/tbody/tr[" + str(i+2) + "]/td[3]")).text
         positions_list.append(position)
 
     return positions_list

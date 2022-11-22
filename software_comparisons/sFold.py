@@ -121,7 +121,7 @@ def all_sequences(results_link, chromedriver_path):
         # Delete hyphen (final character)
         startpos = startpos[:-1]
         i = i+15
-        allstartpositions.append(startpos)
+        allstartpositions.append(int(startpos))
     
         
     return sense_sequences, antisense_sequences, allstartpositions
